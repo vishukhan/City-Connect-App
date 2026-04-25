@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CityConnect Pro | Your Digital City</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <div class="app-shell">
+        <header class="main-header">
+            <div class="logo-area">
+                <div class="brand-wrapper">
+                    <img src="logo1.png" alt="Logo" class="app-logo">
+                    <h1>City<span>Connect</span></h1>
+                </div>
+                <div class="header-actions">
+                    <button class="icon-btn" onclick="openEditModal()" title="Merchant Dashboard"><i class="fa fa-store"></i></button>
+                    <button class="icon-btn" onclick="checkAdminPin()"><i class="fa fa-shield-alt"></i></button>
+                </div>
+            </div>
+            
+            <div class="header-sub-bar">
+                <div class="city-selector">
+                    <i class="fa fa-map-marker-alt"></i>
+                    <select id="cityFilter" size="2"  onchange="loadShops()">
+                       <option value="all" selected>All Cities</option>
+<option value="Kalwan">Kalwan</option>
+<option value="Dhamtan Shaib">Dhamtan Shaib</option>
+<option value="Tohana">Tohana</option>
+<option value="Dangra">Dangra</option>
+<option value="Kanheri">Kanheri</option>
+<option value="Narwana">Narwana</option>
+<option value="Jind">Jind</option>
+<option value="Rattakhera">Rethakhera</option>
+<option value="Saniyana">Saniyana</option>
+<option value="Uchana">Uchana</option>
+<option value="Baliyanwala">Baliyanwala</option>
+<option value="Loha Khera">Loha Khera</option>
+<option value="Laloda">Laloda</option>
+<option value="Nagla">Nagla</option>
+                    </select>
+                </div>
+                <div class="search-box">
+                    <i class="fa fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Dukan ya item search karein...">
+                </div>
+            </div>
+        </header>
+
+        <nav class="categories">
+            <button class="chip active" data-cat="all" onclick="filterCat('all', this)">All</button>
+            <button class="chip" data-cat="medical" onclick="filterCat('medical', this)">Medical</button>
+            <button class="chip" data-cat="gym" onclick="filterCat('gym', this)">Gym</button>
+            <button class="chip" data-cat="fast-food" onclick="filterCat('fast-food', this)">Fast-Food</button>
+            <button class="chip" data-cat="kirana" onclick="filterCat('kirana', this)">Kirana</button>
+            <button class="chip" data-cat="fruits" onclick="filterCat('fruits', this)">Fruits</button>
+            <button class="chip" data-cat="juice" onclick="filterCat('juice', this)">Juice</button>
+            <button class="chip" data-cat="shoes" onclick="filterCat('shoes', this)">Shoes</button>
+            <button class="chip" data-cat="suits" onclick="filterCat('suits', this)">Suits</button>
+            <button class="chip" data-cat="readyment" onclick="filterCat('readyment', this)">Readyment</button>
+            <button class="chip" data-cat="clothes" onclick="filterCat('clothes', this)">Clothes</button>
+            <button class="chip" data-cat="barbar" onclick="filterCat('barbar', this)">Barbar</button>
+            <button class="chip" data-cat="csc" onclick="filterCat('csc', this)">CSC-Cemter</button>
+            <button class="chip" data-cat="mobile" onclick="filterCat('mobile', this)">Mobile</button>
+            <button class="chip" data-cat="electronic" onclick="filterCat('electronic', this)">Electronic</button>
+            <button class="chip" data-cat="plumber" onclick="filterCat('plumber', this)">Plumber</button>
+            <button class="chip" data-cat="lighting" onclick="filterCat('lighting', this)">Lighting</button>
+            <button class="chip" data-cat="tent-house" onclick="filterCat('tent-house', this)">Tent House</button>
+            <button class="chip" data-cat="agensies" onclick="filterCat('agensies', this)">Agensies</button>
+            <button class="chip" data-cat="bike-mechanic" onclick="filterCat('bike-mechanic', this)">Bike Mechanic</button>
+            <button class="chip" data-cat="cars-mechanic" onclick="filterCat('cars-mechanic', this)">Cars Mechanic</button>
+            <button class="chip" data-cat="tyre-reparing" onclick="filterCat('tyre-repare', this)">Tyre Repare</button>
+            <button class="chip" data-cat="electric-schoty" onclick="filterCat('electric-schoty', this)">Electric Schoty</button>
+            <button class="chip" data-cat="electric-mechanic" onclick="filterCat('electric-mechanic', this)">Electric Mechanic</button>
+            <button class="chip" data-cat="tractor-mechanic" onclick="filterCat('tractor-mechanic', this)">Tractor Mechanic</button>
+            <button class="chip" data-cat="tution-classes" onclick="filterCat('tution-classes', this)">Tution Classes</button>
+            <button class="chip" data-cat="medical-lab" onclick="filterCat('medical-lab', this)">Medical Lab</button>
+            <button class="chip" data-cat="library" onclick="filterCat('library', this)">Library</button>
+        </nav>
+
+        <main id="shopList" class="shop-grid"></main>
+        <button class="fab" onclick="openModal()"><i class="fa fa-plus"></i></button>
+    </div>
+
+    <div id="detailsPage" class="full-page">
+        <div class="page-nav">
+            <button onclick="closeDetails()"><i class="fa fa-chevron-left"></i></button>
+            <h2 id="detName">Shop Profile</h2>
+        </div>
+        <div class="page-body">
+            <img id="detImg" src="" class="hero-img">
+            <div class="content-card">
+                <p id="detAddr" class="info-text"></p>
+                <div id="map-container" style="display:none; margin-bottom: 15px;">
+                    <a id="mapLink" href="#" target="_blank" class="map-btn"><i class="fa fa-directions"></i> Open in Google Maps</a>
+                </div>
+                <div class="sticky-footer">
+                    <a id="detCallBtn" href="" class="primary-btn">Call Now</a>
+                </div>
+                <div class="divider"></div>
+                <div id="liveUpdates" class="live-updates-container"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="shopModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Add New Shop</h3><button onclick="closeModal()">&times;</button></div>
+            <div class="form-body">
+                <div class="upload-area" onclick="document.getElementById('imgFile').click()">
+                    <i class="fa fa-cloud-upload-alt"></i>
+                    <p id="fileName">Shop Main Photo</p>
+                    <input type="file" id="imgFile" hidden accept="image/*">
+                </div>
+                <input type="text" id="regName" placeholder="Shop Name">
+                <input type="text" id="regCity" placeholder="City (e.g. Tohana)">
+                <div class="input-row">
+                    <select id="regCat" size="2" class="scroll-select">
+                       <option value="kirana" selected>Kirana</option>
+                       <option value="medical">Medical</option>
+                       <option value="gym">Gym</option>
+                       <option value="fast-food">Fast-Food</option>
+                       <option value="clothes">Clothes</option>
+                       <option value="suits">Ladies Suits</option>
+                       <option value="juice">Juice</option>
+                       <option value="fruits">Fruits</option>
+                       <option value="csc">CSC-Center</option>
+                       <option value="readyment">Readyment</option>
+                       <option value="shoes">Shoes</option>
+                       <option value="makeup">Ladies Items</option>
+                       <option value="barber">Barber</option>
+                       <option value="mobile" >Mobile</option>
+                       <option value="electronic">Electronic</option>
+                       <option value="plumber">Plumber</option>
+                       <option value="lighting">Lighting</option>
+                       <option value="tent-hoise">Tent House</option>
+                       <option value="agensies">Agensies</option>
+                       <option value="bike-mechanic">Bike Mechanic</option>
+                       <option value="cars-mechanic">Cars Mechanic</option>
+                       <option value="tyre-repairing">Tyre Repairing</option>
+                       <option value="electric-schooty">Electric Schooty</option>
+                       <option value="electric-mechanic">Electric Mechanic</option>
+                       <option value="tractor-mechanic">Tractor Mechanic</option>
+                       <option value="tution-classes">Tution Classes</option>
+                       <option value="medical-lab">Medical Lab</option>
+                       <option value="library">Library</option>
+                   </select>
+                    <input type="tel" id="regPhone" placeholder="Phone Number">
+                </div>
+                <input type="text" id="regMap" placeholder="Google Maps Link (Optional)">
+                <input type="password" id="regPin" placeholder="Create Secret PIN">
+                <input type="text" id="regAddr" placeholder="Full Address">
+                <button id="submitBtn" class="primary-btn" onclick="handleRegistration()">Register Shop</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>Merchant Dashboard</h3><button onclick="closeEditModal()">&times;</button></div>
+            
+            <div id="editFormStep1">
+                <p style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">Login to update your shop details.</p>
+                <input type="tel" id="loginPhone" placeholder="Registered Phone">
+                <input type="password" id="loginPin" placeholder="Enter PIN">
+                <button class="primary-btn" onclick="verifyMerchant()">Login</button>
+            </div>
+
+            <div id="editFormStep2" style="display:none;">
+                <div class="add-stock-box">
+                    <h4 style="margin-bottom:10px;">Post Live Update</h4>
+                    <div class="upload-area small" style="padding:15px;" onclick="document.getElementById('itemFile').click()">
+                        <i class="fa fa-camera"></i>
+                        <p id="itemFileName" style="font-size:0.7rem;">Item Photo (Optional)</p>
+                        <input type="file" id="itemFile" hidden accept="image/*">
+                    </div>
+                    <textarea id="itemText" placeholder="Stock update ya offer likhein (e.g. Fresh Mangoes available!)" style="height:80px;"></textarea>
+                    <button class="primary-btn" id="postBtn" onclick="postUpdate()">Post Live Now</button>
+                </div>
+                <h4 style="margin: 15px 0 10px;">Manage Your Posts:</h4>
+                <div id="merchantPostList" class="mini-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="adminPanel" class="modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Pending Approvals</h3>
+                <button onclick="closeAdmin()">&times;</button>
+            </div>
+            <div id="pendingList">
+                <p style="text-align:center; color:#999;">No pending shops.</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
