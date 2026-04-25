@@ -14,7 +14,7 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 const IMGBB_KEY = "4bfd453f78fd8f1d35621d90eecaf679"; 
-const _0xAdmin = "NzQxOTEzMDI3Mg=="; // Base64 for 7419130272
+const _0xAdmin = "NzQxOTEzMDI3Mg==";
 
 let currentShopKey = null;
 let currentCategory = 'all';
