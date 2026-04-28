@@ -1,0 +1,339 @@
+:root { 
+    --main: #4f46e5; 
+    --main-light: #e0e7ff;
+    --bg: #f8fafc; 
+    --text-dark: #1e293b;
+    --text-light: #64748b;
+    --white: #ffffff;
+}
+
+body { 
+    margin: 0; 
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
+    background: var(--bg); 
+    color: var(--text-dark); 
+    overflow-x: hidden; 
+}
+
+/* --- Header & Navigation --- */
+.main-header { 
+    background: var(--white); 
+    position: sticky; 
+    top: 0; 
+    z-index: 1000; 
+    border-bottom: 1px solid #e2e8f0; 
+    padding: 10px 15px; 
+}
+
+.logo-area { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 12px; 
+}
+
+.brand-wrapper { display: flex; align-items: center; gap: 0px; }
+.app-logo { height: 35px; width: auto; object-fit: contain; }
+h1 { font-size: 1.4rem; margin: 0; font-weight: 800; color: var(--text-dark); }
+h1 span { color: var(--main); }
+
+.header-actions { display: flex; gap: 10px; }
+.icon-btn { 
+    background: #f1f5f9; 
+    border: none; 
+    padding: 10px; 
+    border-radius: 12px; 
+    color: var(--main); 
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.header-sub-bar { display: flex; gap: 10px; align-items: center; }
+
+.city-selector { 
+    background: #f1f5f9; 
+    padding: 8px 12px; 
+    border-radius: 12px; 
+    display: flex; 
+    align-items: center; 
+    gap: 6px; 
+    font-size: 0.85rem; 
+    color: var(--main);
+}
+.city-selector select { 
+    border: none; 
+    background: none; 
+    outline: none; 
+    font-weight: 600;
+    color: var(--text-dark);
+    cursor: pointer;
+}
+
+.search-box { 
+    flex: 1; 
+    background: #f1f5f9; 
+    border-radius: 12px; 
+    padding: 8px 12px; 
+    display: flex; 
+    align-items: center; 
+}
+.search-box i { color: var(--text-light); }
+.search-box input { 
+    border: none; 
+    background: none; 
+    width: 100%; 
+    outline: none; 
+    margin-left: 8px; 
+    font-size: 0.9rem; 
+}
+
+/* --- Categories Chips --- */
+.categories { 
+    display: flex; 
+    overflow-x: auto; 
+    gap: 8px; 
+    padding: 12px 15px; 
+    scrollbar-width: none; 
+}
+.categories::-webkit-scrollbar { display: none; }
+
+.chip { 
+    border: 1px solid #e2e8f0; 
+    background: var(--white); 
+    padding: 7px 16px; 
+    border-radius: 20px; 
+    white-space: nowrap; 
+    font-size: 0.85rem; 
+    font-weight: 500;
+    transition: 0.2s;
+    cursor: pointer;
+}
+.chip.active { 
+    background: var(--main); 
+    color: var(--white); 
+    border-color: var(--main); 
+}
+
+/* --- Shop Grid --- */
+.shop-grid { 
+    padding: 0 15px 100px; 
+    display: grid; 
+    grid-template-columns: 1fr 1fr; 
+    gap: 12px; 
+}
+
+.shop-card { 
+    background: var(--white); 
+    border-radius: 16px; 
+    overflow: hidden; 
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+    border: 1px solid #f1f5f9;
+}
+.card-img { width: 100%; height: 120px; object-fit: cover; }
+.card-info { padding: 10px; }
+.card-info h3 { font-size: 0.95rem; margin: 0 0 5px 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.card-info p { font-size: 0.75rem; color: var(--text-light); margin: 0; }
+
+/* --- Modals --- */
+.modal { 
+    position: fixed; 
+    inset: 0; 
+    background: rgba(0,0,0,0.6); 
+    z-index: 2000; 
+    display: none; 
+    backdrop-filter: blur(5px); 
+}
+.modal-content { 
+    background: var(--white); 
+    width: 90%; 
+    max-width: 400px; 
+    margin: 30px auto; 
+    border-radius: 24px; 
+    padding: 20px; 
+    max-height: 85vh; 
+    overflow-y: auto; 
+    animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.modal-header { 
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    margin-bottom: 20px; 
+}
+.modal-header h3 { margin: 0; color: var(--main); }
+.modal-header button { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+
+/* --- Forms --- */
+.upload-area { 
+    background: #f8fafc; 
+    border: 2px dashed #cbd5e1; 
+    padding: 25px; 
+    text-align: center; 
+    border-radius: 15px; 
+    margin-bottom: 15px; 
+    cursor: pointer; 
+}
+.upload-area i { font-size: 2rem; color: var(--main); margin-bottom: 10px; }
+.upload-area p { margin: 0; font-size: 0.85rem; color: var(--text-light); }
+
+input, select, textarea { 
+    width: 100%; 
+    padding: 12px; 
+    border-radius: 12px; 
+    border: 1px solid #e2e8f0; 
+    margin-bottom: 12px; 
+    box-sizing: border-box; 
+    font-size: 0.9rem;
+    outline: none;
+}
+input:focus { border-color: var(--main); }
+
+.primary-btn { 
+    background: var(--main); 
+    color: var(--white); 
+    border: none; 
+    padding: 14px; 
+    border-radius: 12px; 
+    width: 100%; 
+    font-weight: 700; 
+    cursor: pointer; 
+    transition: 0.3s;
+}
+.primary-btn:active { transform: scale(0.98); }
+
+/* --- Shop Details Page --- */
+.full-page { 
+    position: fixed; 
+    inset: 0; 
+    background: var(--bg); 
+    z-index: 1500; 
+    display: none; 
+    overflow-y: auto; 
+    scroll-behavior: smooth; /* Smooth scroll support */
+}
+.page-nav { 
+    padding: 15px 20px; 
+    display: flex; 
+    align-items: center; 
+    gap: 15px; 
+    background: var(--white); 
+    position: sticky; 
+    top: 0; 
+    z-index: 10;
+    border-bottom: 1px solid #eee;
+}
+.hero-img { width: 100%; height: 300px; object-fit: cover; }
+.content-card { 
+    padding: 20px; 
+    margin-top: -20px; 
+    background: var(--white); 
+    border-radius: 30px 30px 0 0; 
+    position: relative; 
+    min-height: 400px;
+}
+
+.map-btn { 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 8px;
+    background: var(--main-light); 
+    color: var(--main); 
+    padding: 12px; 
+    border-radius: 12px; 
+    text-decoration: none; 
+    font-weight: 600; 
+    margin-bottom: 20px;
+}
+
+/* --- Live Updates --- */
+.update-card { 
+    background: var(--white); 
+    border-left: 4px solid var(--main); 
+    padding: 15px; 
+    margin-bottom: 15px; 
+    border-radius: 12px; 
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
+    transition: background-color 0.5s ease; /* Highlight animation */
+}
+.update-card small { color: var(--text-light); font-size: 0.7rem; }
+.update-card p { margin: 8px 0; font-size: 0.9rem; line-height: 1.4; }
+.update-card img { width: 100%; border-radius: 10px; margin-top: 10px; }
+
+/* --- Float Action Button --- */
+.fab { 
+    position: fixed; 
+    bottom: 30px; 
+    right: 20px; 
+    width: 56px; 
+    height: 56px; 
+    border-radius: 28px; 
+    background: var(--main); 
+    color: var(--white); 
+    border: none; 
+    font-size: 20px; 
+    box-shadow: 0 4px 15px rgba(79, 70, 229, 0.4); 
+    cursor: pointer;
+    z-index: 900;
+}
+
+/* --- NEW LOGIC ADDED: Featured Swipe Container --- */
+.horizontal-scroll { 
+    display: flex; 
+    overflow-x: auto; 
+    gap: 12px; 
+    padding: 10px 0 20px; 
+    scrollbar-width: none; 
+}
+.horizontal-scroll::-webkit-scrollbar { display: none; }
+
+.swipe-item { 
+    min-width: 160px; 
+    background: var(--white); 
+    border-radius: 15px; 
+    border: 1px solid #f1f5f9; 
+    overflow: hidden; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.04); 
+    flex-shrink: 0; 
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.swipe-item:active { transform: scale(0.95); }
+.swipe-item img { width: 100%; height: 110px; object-fit: cover; }
+.swipe-info { padding: 8px; font-size: 11px; font-weight: 700; text-align: center; color: var(--main); text-transform: uppercase; }
+
+
+
+#detailsPage {
+    /* ... baki purani settings ... */
+    overflow-y: auto !important; 
+    scroll-behavior: smooth !important;
+}
+
+
+
+
+
+/* --- Mobile Responsive Fixes (Original) --- */
+@media (max-width: 400px) {
+    .shop-grid { grid-template-columns: 1fr; }
+    .card-img { height: 160px; }
+    h1 { font-size: 1.1rem; }
+}
+
+
+.full-page {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 1500;
+    display: none;
+    overflow-y: auto !important; /* Scroll enable rakhein */
+    scroll-behavior: smooth !important; /* Smooth animation ke liye */
+}
