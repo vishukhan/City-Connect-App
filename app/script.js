@@ -21,26 +21,16 @@ let currentCategory = 'all';
 
 // --- 2. IMPROVED AUTO SCROLL LOGIC ---
 function scrollToPost(postId) {
-    // 800ms ka wait taaki modal khulne ka animation poora ho jaye
     setTimeout(() => {
         const target = document.getElementById('post-' + postId);
         const container = document.getElementById('detailsPage');
 
         if (target && container) {
-            target.scrollIntoView({ 
-                behavior: 'smooth', 
-                block: 'center' 
-            });
-
-            // Flash Highlight Effect
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
             target.style.transition = "background 0.5s ease";
             target.style.backgroundColor = "#e0e7ff"; 
-            setTimeout(() => { 
-                target.style.backgroundColor = "#ffffff"; 
-            }, 2000);
+            setTimeout(() => { target.style.backgroundColor = "#ffffff"; }, 2000);
         } else {
-            console.log("Post not found, retrying...");
-            // Retry after another 400ms if not found
             setTimeout(() => {
                 const retryTarget = document.getElementById('post-' + postId);
                 if(retryTarget) retryTarget.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -72,7 +62,6 @@ function sendPush(title, msg) {
     }
 }
 
-// Real-time Push for New Shops
 db.ref('shops').limitToLast(1).on('child_added', (snap) => {
     const shop = snap.val();
     if (shop.timestamp && (Date.now() - shop.timestamp < 60000)) {
@@ -96,25 +85,39 @@ window.onclick = function(event) {
     });
 }
 
-// --- 5. DATA LOADING & FILTERS ---
+// --- 5. UPDATED DATA LOADING (CITY SEARCH ENABLED) ---
 function loadShops() {
-    const selectedCity = document.getElementById('cityFilter').value;
+    const selectedCity = document.getElementById('cityFilter').value.toLowerCase();
     const searchQuery = document.getElementById('searchInput').value.toLowerCase();
 
     db.ref('shops').on('value', snap => {
         const grid = document.getElementById('shopList');
         grid.innerHTML = "";
+        
         snap.forEach(child => {
             const v = child.val();
-            const matchesCity = (selectedCity === 'all' || v.city === selectedCity);
-            const matchesCat = (currentCategory === 'all' || v.cat === currentCategory);
-            const matchesSearch = v.name.toLowerCase().includes(searchQuery);
+            const shopCity = (v.city || "").toLowerCase();
+            const shopName = (v.name || "").toLowerCase();
 
-            if(matchesCity && matchesCat && matchesSearch) {
+            // Logic: Search bar se City ya Shop name dono search honge
+            const matchesSearch = shopName.includes(searchQuery) || shopCity.includes(searchQuery);
+            
+            // Logic: Dropdown filter (agar 'all' nahi hai to city match honi chaiye)
+            const matchesCityFilter = (selectedCity === 'all' || shopCity === selectedCity);
+            
+            // Logic: Category chip filter
+            const matchesCat = (currentCategory === 'all' || v.cat === currentCategory);
+
+            if(matchesSearch && matchesCityFilter && matchesCat) {
                 const card = document.createElement('div');
                 card.className = "shop-card";
                 card.onclick = () => openDetails(child.key);
-                card.innerHTML = `<img src="${v.img}" class="card-img"><div class="card-info"><h3>${v.name}</h3><p><i class="fa fa-map-marker-alt"></i> ${v.city || 'Local'}</p></div>`;
+                card.innerHTML = `
+                    <img src="${v.img}" class="card-img">
+                    <div class="card-info">
+                        <h3>${v.name}</h3>
+                        <p><i class="fa fa-map-marker-alt"></i> ${v.city || 'Local'}</p>
+                    </div>`;
                 grid.appendChild(card);
             }
         });
@@ -130,7 +133,6 @@ function filterCat(cat, btn) {
 
 // --- 6. SHOP DETAILS & UPDATES ---
 function openDetails(id) {
-    // Show modal first for faster rendering
     document.getElementById('detailsPage').style.display = 'block';
     document.getElementById('detailsPage').scrollTop = 0;
 
@@ -153,38 +155,29 @@ function openDetails(id) {
 
         if(v.updates) {
             const upds = Object.entries(v.updates).reverse(); 
-
-            // Part A: Featured Swipe
             const imgPosts = upds.filter(([key, u]) => u.img);
             if(imgPosts.length > 0) {
                 const h3 = document.createElement('h3');
                 h3.innerText = "Featured Items";
                 updatesDiv.appendChild(h3);
-
                 const scrollDiv = document.createElement('div');
                 scrollDiv.className = "horizontal-scroll"; 
                 imgPosts.forEach(([postId, u]) => {
                     const item = document.createElement('div');
                     item.className = "swipe-item";
-                    item.onclick = (e) => { 
-                        e.stopPropagation(); 
-                        scrollToPost(postId); 
-                    };
+                    item.onclick = (e) => { e.stopPropagation(); scrollToPost(postId); };
                     item.innerHTML = `<img src="${u.img}"><div class="swipe-info">VIEW POST</div>`;
                     scrollDiv.appendChild(item);
                 });
                 updatesDiv.appendChild(scrollDiv);
             }
-
-            // Part B: All Posts Feed
             const h3Feed = document.createElement('h3');
             h3Feed.innerText = "Live Updates & Stock";
             updatesDiv.appendChild(h3Feed);
-
             upds.forEach(([postId, upd]) => {
                 const div = document.createElement('div');
                 div.className = "update-card";
-                div.id = 'post-' + postId; // ID for Scroll
+                div.id = 'post-' + postId;
                 div.innerHTML = `<small>${upd.time}</small><p>${upd.text}</p>${upd.img ? `<img src="${upd.img}">` : ''}`;
                 updatesDiv.appendChild(div);
             });
@@ -192,8 +185,7 @@ function openDetails(id) {
     });
 }
 
-
-// --- 6. REGISTRATION & MERCHANT LOGIC ---
+// --- 7. REGISTRATION & MERCHANT LOGIC ---
 async function handleRegistration() {
     const name = document.getElementById('regName').value;
     const city = document.getElementById('regCity').value;
@@ -224,7 +216,6 @@ async function handleRegistration() {
     }
 }
 
-// --- 7. MERCHANT & POST LOGIC ---
 async function verifyMerchant() {
     const phone = document.getElementById('loginPhone').value.trim();
     const pin = document.getElementById('loginPin').value.trim();
@@ -288,19 +279,7 @@ function deletePost(key) {
     if(confirm("Delete?")) db.ref(`shops/${currentShopKey}/updates/${key}`).remove();
 }
 
-function checkAdminPin() { 
-    const pin = prompt("Admin PIN:");
-    if(btoa(pin) === _0xAdmin) document.getElementById('adminPanel').style.display = 'block'; 
-}
-
-window.onload = () => {
-    requestPermission();
-    loadShops();
-    const sInput = document.getElementById('searchInput');
-    if(sInput) sInput.oninput = () => loadShops();
-};
-
-// --- 8. ADMIN FUNCTIONS ---
+// --- 9. ADMIN FUNCTIONS ---
 function checkAdminPin() { 
     const pin = prompt("Admin PIN:");
     if(btoa(pin) === _0xAdmin) { 
@@ -339,3 +318,10 @@ function approve(key) {
 }
 
 function reject(key) { if(confirm("Reject?")) db.ref('pending_shops/' + key).remove(); }
+
+window.onload = () => {
+    requestPermission();
+    loadShops();
+    const sInput = document.getElementById('searchInput');
+    if(sInput) sInput.oninput = () => loadShops();
+};
