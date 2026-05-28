@@ -6,6 +6,8 @@
     <title>CityConnect Pro | Your Digital City</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob: android-webview-video-pickle:; img-src * data: blob: android-webview-video-pickle:;">
+
 </head>
 <body>
 
@@ -17,6 +19,8 @@
                     <h1>City<span>Connect</span></h1>
                 </div>
                 <div class="header-actions">
+                    
+                    <button class="icon-btn" onclick="openTrackingModal()" title="Track Order"><i class="fa fa-truck"></i></button>
                     <button class="icon-btn" onclick="openEditModal()" title="Merchant Dashboard"><i class="fa fa-store"></i></button>
                     <button class="icon-btn" onclick="checkAdminPin()"><i class="fa fa-shield-alt"></i></button>
                 </div>
@@ -25,36 +29,36 @@
             <div class="header-sub-bar">
                 <div class="city-selector">
                     <i class="fa fa-map-marker-alt"></i>
-                    <select id="cityFilter" size="2"  onchange="loadShops()">
-                       <option value="all" selected>All Cities</option>
-<option value="Bahadurgarh">Bahadurgarh</option>
-<option value="Panchkula">Panchkula</option>
-<option value="Tohana">Tohana</option>
-<option value="Panipat">Panipat</option>
-<option value="Sonipat">Sonipat</option>
-<option value="Narwana">Narwana</option>
-<option value="Jind">Jind</option>
-<option value="Thanesar">Thanesar</option>
-<option value="Sirsa">Sirsa</option>
-<option value="Uchana">Uchana</option>
-<option value="Jhajjar">Jhajjar</option>
-<option value="Mahendragarh">Mahendragarh</option>
-<option value="Palwal">Palwal</option>
-<option value="Gohana">Gohana</option>
-<option value="Barwala">Barwala</option>
-<option value="Hansi">Hansi</option>
-<option value="Rewari">Rewari</option>
-<option value="Uklana ">Uklana</option>
-<option value="Pehowa">Pehowa </option>
-<option value="Karnal">Karnal</option>
-<option value="Kurukshetra">Kurukshetra</option>
-<option value="Yamuna-Nagar">Yamuna Nagar</option>
-<option value="Bhiwani">Bhiwani</option>
-<option value="Rohtak">Rohtak</option>
-<option value="Shampla">Shampla</option>
-<option value="Bhuna">Bhuna</option>
-<option value="Fathebad">Fatehabad</option>
-<option value="Ambala">Ambala</option>
+                    <select id="cityFilter" size="2" onchange="loadShops()">
+                        <option value="all" selected>All Cities</option>
+                        <option value="Bahadurgarh">Bahadurgarh</option>
+                        <option value="Panchkula">Panchkula</option>
+                        <option value="Tohana">Tohana</option>
+                        <option value="Panipat">Panipat</option>
+                        <option value="Sonipat">Sonipat</option>
+                        <option value="Narwana">Narwana</option>
+                        <option value="Jind">Jind</option>
+                        <option value="Thanesar">Thanesar</option>
+                        <option value="Sirsa">Sirsa</option>
+                        <option value="Uchana">Uchana</option>
+                        <option value="Jhajjar">Jhajjar</option>
+                        <option value="Mahendragarh">Mahendragarh</option>
+                        <option value="Palwal">Palwal</option>
+                        <option value="Gohana">Gohana</option>
+                        <option value="Barwala">Barwala</option>
+                        <option value="Hansi">Hansi</option>
+                        <option value="Rewari">Rewari</option>
+                        <option value="Uklana">Uklana</option>
+                        <option value="Pehowa">Pehowa</option>
+                        <option value="Karnal">Karnal</option>
+                        <option value="Kurukshetra">Kurukshetra</option>
+                        <option value="Yamuna-Nagar">Yamuna Nagar</option>
+                        <option value="Bhiwani">Bhiwani</option>
+                        <option value="Rohtak">Rohtak</option>
+                        <option value="Shampla">Shampla</option>
+                        <option value="Bhuna">Bhuna</option>
+                        <option value="Fathebad">Fatehabad</option>
+                        <option value="Ambala">Ambala</option>
                     </select>
                 </div>
                 <div class="search-box">
@@ -63,6 +67,14 @@
                 </div>
             </div>
         </header>
+
+        <div class="tracking-fast-bar">
+            <div class="track-input-wrapper">
+                <i class="fa fa-search-location"></i>
+                <input type="text" id="trackIdInput" placeholder="Apni Order Tracking ID yahan dalein...">
+            </div>
+            <button onclick="openTrackingModal(); trackOrder();" class="track-submit-btn">Track Order</button>
+        </div>
 
         <nav class="categories">
             <button class="chip active" data-cat="all" onclick="filterCat('all', this)">All</button>
@@ -77,7 +89,7 @@
             <button class="chip" data-cat="readyment" onclick="filterCat('readyment', this)">Readyment</button>
             <button class="chip" data-cat="clothes" onclick="filterCat('clothes', this)">Clothes</button>
             <button class="chip" data-cat="barbar" onclick="filterCat('barbar', this)">Barbar</button>
-            <button class="chip" data-cat="csc" onclick="filterCat('csc', this)">CSC-Cemter</button>
+            <button class="chip" data-cat="csc" onclick="filterCat('csc', this)">CSC-Center</button>
             <button class="chip" data-cat="mobile" onclick="filterCat('mobile', this)">Mobile</button>
             <button class="chip" data-cat="electronic" onclick="filterCat('electronic', this)">Electronic</button>
             <button class="chip" data-cat="plumber" onclick="filterCat('plumber', this)">Plumber</button>
@@ -111,8 +123,9 @@
                 <div id="map-container" style="display:none; margin-bottom: 15px;">
                     <a id="mapLink" href="#" target="_blank" class="map-btn"><i class="fa fa-directions"></i> Open in Google Maps</a>
                 </div>
-                <div class="sticky-footer">
-                    <a id="detCallBtn" href="" class="primary-btn">Call Now</a>
+                <div class="action-buttons-group">
+                    <a id="detCallBtn" href="" class="primary-btn call-btn-style"><i class="fa fa-phone"></i> Call Now</a>
+                    <button id="detOrderBtn" class="primary-btn order-btn-style" onclick="openOrderModal()"><i class="fa fa-shopping-basket"></i> Order Online</button>
                 </div>
                 <div class="divider"></div>
                 <div id="liveUpdates" class="live-updates-container"></div>
@@ -133,41 +146,63 @@
                 <input type="text" id="regCity" placeholder="City (e.g. Tohana)">
                 <div class="input-row">
                     <select id="regCat" size="2" class="scroll-select">
-                       <option value="kirana" selected>Kirana</option>
-                       <option value="medical">Medical</option>
-                       <option value="gym">Gym</option>
-                       <option value="fast-food">Fast-Food</option>
-                       <option value="clothes">Clothes</option>
-                       <option value="suits">Ladies Suits</option>
-                       <option value="juice">Juice</option>
-                       <option value="fruits">Fruits</option>
-                       <option value="csc">CSC-Center</option>
-                       <option value="readyment">Readyment</option>
-                       <option value="shoes">Shoes</option>
-                       <option value="makeup">Ladies Items</option>
-                       <option value="barber">Barber</option>
-                       <option value="mobile" >Mobile</option>
-                       <option value="electronic">Electronic</option>
-                       <option value="plumber">Plumber</option>
-                       <option value="lighting">Lighting</option>
-                       <option value="tent-hoise">Tent House</option>
-                       <option value="agensies">Agensies</option>
-                       <option value="bike-mechanic">Bike Mechanic</option>
-                       <option value="cars-mechanic">Cars Mechanic</option>
-                       <option value="tyre-repairing">Tyre Repairing</option>
-                       <option value="electric-schooty">Electric Schooty</option>
-                       <option value="electric-mechanic">Electric Mechanic</option>
-                       <option value="tractor-mechanic">Tractor Mechanic</option>
-                       <option value="tution-classes">Tution Classes</option>
-                       <option value="medical-lab">Medical Lab</option>
-                       <option value="library">Library</option>
-                   </select>
+                        <option value="kirana" selected>Kirana</option>
+                        <option value="medical">Medical</option>
+                        <option value="gym">Gym</option>
+                        <option value="fast-food">Fast-Food</option>
+                        <option value="clothes">Clothes</option>
+                        <option value="suits">Ladies Suits</option>
+                        <option value="juice">Juice</option>
+                        <option value="fruits">Fruits</option>
+                        <option value="csc">CSC-Center</option>
+                        <option value="readyment">Readyment</option>
+                        <option value="shoes">Shoes</option>
+                        <option value="makeup">Ladies Items</option>
+                        <option value="barber">Barber</option>
+                        <option value="mobile">Mobile</option>
+                        <option value="electronic">Electronic</option>
+                        <option value="plumber">Plumber</option>
+                        <option value="lighting">Lighting</option>
+                        <option value="tent-hoise">Tent House</option>
+                        <option value="agensies">Agensies</option>
+                        <option value="bike-mechanic">Bike Mechanic</option>
+                        <option value="cars-mechanic">Cars Mechanic</option>
+                        <option value="tyre-repairing">Tyre Repairing</option>
+                        <option value="electric-schooty">Electric Schooty</option>
+                        <option value="electric-mechanic">Electric Mechanic</option>
+                        <option value="tractor-mechanic">Tractor Mechanic</option>
+                        <option value="tution-classes">Tution Classes</option>
+                        <option value="medical-lab">Medical Lab</option>
+                        <option value="library">Library</option>
+                    </select>
                     <input type="tel" id="regPhone" placeholder="Phone Number">
                 </div>
                 <input type="text" id="regMap" placeholder="Google Maps Link (Optional)">
                 <input type="password" id="regPin" placeholder="Create Secret PIN">
                 <input type="text" id="regAddr" placeholder="Full Address">
                 <button id="submitBtn" class="primary-btn" onclick="handleRegistration()">Register Shop</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="orderModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>🛍️ Place Online Order</h3><button onclick="closeOrderModal()">&times;</button></div>
+            <div class="form-body">
+                <input type="text" id="ordName" placeholder="Aapka Naam">
+                <input type="tel" id="ordPhone" placeholder="Mobile Number">
+                <textarea id="ordAddr" placeholder="Poora Delivery Address (H.No, Gali, Landmark, City)" style="height:60px;"></textarea>
+                <textarea id="ordItems" placeholder="Samaan ki List (e.g. 5kg Cheeni, 2 Choti Bread...)" style="height:90px;"></textarea>
+                <button class="primary-btn" style="background:#10b981;" onclick="placeOrder()">Confirm Order 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="trackingModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header"><h3>📍 Live Tracking Status</h3><button onclick="closeTrackingModal()">&times;</button></div>
+            <div id="trackResult">
+                <p style="text-align:center; color:#999; font-size:0.9rem;">Apni Order Tracking ID daal kar track karein...</p>
             </div>
         </div>
     </div>
@@ -194,23 +229,37 @@
                     <textarea id="itemText" placeholder="Stock update ya offer likhein (e.g. Fresh Mangoes available!)" style="height:80px;"></textarea>
                     <button class="primary-btn" id="postBtn" onclick="postUpdate()">Post Live Now</button>
                 </div>
+                
+                <div id="merchantOrderList" class="merchant-orders-area">
+                    <h4>📦 Incoming Customer Orders</h4>
+                    <p style="font-size: 0.8rem; color:#999;">Koi live order nahi mila.</p>
+                </div>
+
                 <h4 style="margin: 15px 0 10px;">Manage Your Posts:</h4>
                 <div id="merchantPostList" class="mini-list"></div>
             </div>
         </div>
     </div>
 
-    <div id="adminPanel" class="modal" style="display:none;">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Pending Approvals</h3>
-                <button onclick="closeAdmin()">&times;</button>
-            </div>
-            <div id="pendingList">
-                <p style="text-align:center; color:#999;">No pending shops.</p>
-            </div>
+  <!-- ADMIN PANEL MODAL -->
+<div id="adminPanel" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y:auto;">
+    <div class="modal-content" style="background:#fff; margin:10% auto; padding:20px; width:90%; max-width:500px; border-radius:12px; position:relative; text-align:center;">
+        <span onclick="closeAdmin()" style="position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer; font-weight:bold;">&times;</span>
+        <h2 style="margin-top:0; color:#1e3a8a;"><i class="fa fa-user-shield"></i> Admin Dashboard</h2>
+        <hr style="border:0; border-top:1px solid #eee; margin-bottom:15px;">
+        
+        <!-- PENDING SHOPS CONTAINER -->
+        <div id="pendingList" style="max-height:250px; overflow-y:auto; margin-bottom:20px; border:1px solid #f0f0f0; padding:10px; border-radius:8px; background:#fafafa;">
+            <!-- Pending shops dynamic content here -->
+        </div>
+
+        <!-- NEW: LIVE ORDERS CONTAINER FOR ADMIN -->
+        <div id="adminOrderList" style="max-height:350px; overflow-y:auto; border:1px solid #f0f0f0; padding:10px; border-radius:8px; background:#fafafa;">
+            <!-- Live global orders dynamic content here -->
         </div>
     </div>
+</div>
+
 
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
