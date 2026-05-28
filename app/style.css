@@ -5,6 +5,8 @@
     --text-dark: #1e293b;
     --text-light: #64748b;
     --white: #ffffff;
+    --success: #10b981;
+    --success-light: #d1fae5;
 }
 
 body { 
@@ -32,7 +34,7 @@ body {
     margin-bottom: 12px; 
 }
 
-.brand-wrapper { display: flex; align-items: center; gap: 0px; }
+.brand-wrapper { display: flex; align-items: center; gap: 8px; }
 .app-logo { height: 35px; width: auto; object-fit: contain; }
 h1 { font-size: 1.4rem; margin: 0; font-weight: 800; color: var(--text-dark); }
 h1 span { color: var(--main); }
@@ -46,18 +48,20 @@ h1 span { color: var(--main); }
     color: var(--main); 
     font-size: 1.1rem;
     cursor: pointer;
+    transition: background 0.2s;
 }
+.icon-btn:hover { background: var(--main-light); }
 
 .header-sub-bar { display: flex; gap: 10px; align-items: center; }
 
 .city-selector { 
     background: #f1f5f9; 
-    padding: 8px 12px; 
+    padding: 10px; 
     border-radius: 12px; 
     display: flex; 
     align-items: center; 
     gap: 6px; 
-    font-size: 0.85rem; 
+    font-size: 1rem; 
     color: var(--main);
 }
 .city-selector select { 
@@ -67,15 +71,17 @@ h1 span { color: var(--main); }
     font-weight: 600;
     color: var(--text-dark);
     cursor: pointer;
+    font-size: 0.9rem;
 }
 
 .search-box { 
     flex: 1; 
     background: #f1f5f9; 
     border-radius: 12px; 
-    padding: 8px 12px; 
+    padding: 10px 12px; 
     display: flex; 
     align-items: center; 
+    gap: 8px;
 }
 .search-box i { color: var(--text-light); }
 .search-box input { 
@@ -83,8 +89,47 @@ h1 span { color: var(--main); }
     background: none; 
     width: 100%; 
     outline: none; 
-    margin-left: 8px; 
     font-size: 0.9rem; 
+}
+
+/* --- NEW: Fast Tracking Bar (Home Page Layout) --- */
+.tracking-fast-bar {
+    display: flex;
+    background: var(--white);
+    margin: 12px 15px;
+    padding: 6px;
+    border-radius: 14px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    border: 1px solid #e2e8f0;
+    gap: 8px;
+}
+.track-input-wrapper {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    background: #f8fafc;
+    border-radius: 10px;
+    padding: 0 12px;
+    gap: 8px;
+}
+.track-input-wrapper i { color: var(--main); }
+.track-input-wrapper input {
+    border: none;
+    background: none;
+    padding: 8px 0;
+    margin: 0;
+    font-size: 0.85rem;
+}
+.track-submit-btn {
+    background: var(--main);
+    color: var(--white);
+    border: none;
+    padding: 0 16px;
+    border-radius: 10px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    white-space: nowrap;
 }
 
 /* --- Categories Chips --- */
@@ -147,11 +192,12 @@ h1 span { color: var(--main); }
     background: var(--white); 
     width: 90%; 
     max-width: 400px; 
-    margin: 30px auto; 
+    margin: 40px auto; 
     border-radius: 24px; 
     padding: 20px; 
     max-height: 85vh; 
     overflow-y: auto; 
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     animation: slideUp 0.3s ease-out;
 }
 
@@ -165,11 +211,13 @@ h1 span { color: var(--main); }
     justify-content: space-between; 
     align-items: center; 
     margin-bottom: 20px; 
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 10px;
 }
-.modal-header h3 { margin: 0; color: var(--main); }
-.modal-header button { background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+.modal-header h3 { margin: 0; color: var(--main); font-size: 1.2rem; }
+.modal-header button { background: none; border: none; font-size: 1.5rem; cursor: pointer; color: var(--text-light); }
 
-/* --- Forms --- */
+/* --- Forms & Inputs --- */
 .upload-area { 
     background: #f8fafc; 
     border: 2px dashed #cbd5e1; 
@@ -179,6 +227,7 @@ h1 span { color: var(--main); }
     margin-bottom: 15px; 
     cursor: pointer; 
 }
+.upload-area.small { padding: 15px; margin-bottom: 12px; }
 .upload-area i { font-size: 2rem; color: var(--main); margin-bottom: 10px; }
 .upload-area p { margin: 0; font-size: 0.85rem; color: var(--text-light); }
 
@@ -191,8 +240,13 @@ input, select, textarea {
     box-sizing: border-box; 
     font-size: 0.9rem;
     outline: none;
+    background: #f8fafc;
 }
-input:focus { border-color: var(--main); }
+input:focus, select:focus, textarea:focus { border-color: var(--main); background: var(--white); }
+textarea { resize: none; font-family: inherit; }
+
+.input-row { display: flex; gap: 10px; }
+.scroll-select { max-height: 45px; overflow-y: auto; }
 
 .primary-btn { 
     background: var(--main); 
@@ -204,6 +258,7 @@ input:focus { border-color: var(--main); }
     font-weight: 700; 
     cursor: pointer; 
     transition: 0.3s;
+    font-size: 0.95rem;
 }
 .primary-btn:active { transform: scale(0.98); }
 
@@ -214,8 +269,8 @@ input:focus { border-color: var(--main); }
     background: var(--bg); 
     z-index: 1500; 
     display: none; 
-    overflow-y: auto; 
-    scroll-behavior: smooth; /* Smooth scroll support */
+    overflow-y: auto !important; 
+    scroll-behavior: smooth !important;
 }
 .page-nav { 
     padding: 15px 20px; 
@@ -228,7 +283,8 @@ input:focus { border-color: var(--main); }
     z-index: 10;
     border-bottom: 1px solid #eee;
 }
-.hero-img { width: 100%; height: 300px; object-fit: cover; }
+.page-nav button { background: none; border: none; font-size: 1.2rem; cursor: pointer; color: var(--text-dark); }
+.hero-img { width: 100%; height: 260px; object-fit: cover; }
 .content-card { 
     padding: 20px; 
     margin-top: -20px; 
@@ -237,6 +293,7 @@ input:focus { border-color: var(--main); }
     position: relative; 
     min-height: 400px;
 }
+.info-text { font-size: 0.9rem; line-height: 1.5; color: var(--text-dark); margin-bottom: 15px; }
 
 .map-btn { 
     display: flex; 
@@ -250,9 +307,36 @@ input:focus { border-color: var(--main); }
     text-decoration: none; 
     font-weight: 600; 
     margin-bottom: 20px;
+    font-size: 0.9rem;
 }
 
+/* --- NEW: Sticky Call & Order Action Grid --- */
+.action-buttons-group {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+.call-btn-style {
+    background: #3b82f6 !important;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex: 1;
+}
+.order-btn-style {
+    background: var(--success) !important;
+    flex: 1.3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.divider { height: 1px; background: #e2e8f0; margin: 20px 0; }
+
 /* --- Live Updates --- */
+.live-updates-container h3 { font-size: 1.1rem; color: var(--text-dark); margin: 15px 0 10px 0; }
 .update-card { 
     background: var(--white); 
     border-left: 4px solid var(--main); 
@@ -260,11 +344,58 @@ input:focus { border-color: var(--main); }
     margin-bottom: 15px; 
     border-radius: 12px; 
     box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
-    transition: background-color 0.5s ease; /* Highlight animation */
+    transition: background-color 0.5s ease;
 }
 .update-card small { color: var(--text-light); font-size: 0.7rem; }
 .update-card p { margin: 8px 0; font-size: 0.9rem; line-height: 1.4; }
 .update-card img { width: 100%; border-radius: 10px; margin-top: 10px; }
+
+/* --- Swipe / Horizontal Featured Container --- */
+.horizontal-scroll { 
+    display: flex; 
+    overflow-x: auto; 
+    gap: 12px; 
+    padding: 5px 0 15px; 
+    scrollbar-width: none; 
+}
+.horizontal-scroll::-webkit-scrollbar { display: none; }
+
+.swipe-item { 
+    min-width: 140px; 
+    background: var(--white); 
+    border-radius: 15px; 
+    border: 1px solid #f1f5f9; 
+    overflow: hidden; 
+    box-shadow: 0 4px 6px rgba(0,0,0,0.04); 
+    flex-shrink: 0; 
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+.swipe-item:active { transform: scale(0.95); }
+.swipe-item img { width: 100%; height: 95px; object-fit: cover; }
+.swipe-info { padding: 6px; font-size: 10px; font-weight: 700; text-align: center; color: var(--main); text-transform: uppercase; }
+
+/* --- NEW: Merchant Dashboard Order Management Section --- */
+.merchant-orders-area {
+    margin-top: 20px;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 14px;
+    border: 1px solid #e2e8f0;
+}
+.merchant-orders-area h4 { margin: 0 0 10px 0; color: var(--text-dark); font-size: 1rem; }
+.mini-list { margin-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.stock-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #fff;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid #edf2f7;
+    font-size: 0.85rem;
+}
+.stock-item i { color: #ef4444; cursor: pointer; padding: 4px; }
 
 /* --- Float Action Button --- */
 .fab { 
@@ -283,57 +414,40 @@ input:focus { border-color: var(--main); }
     z-index: 900;
 }
 
-/* --- NEW LOGIC ADDED: Featured Swipe Container --- */
-.horizontal-scroll { 
-    display: flex; 
-    overflow-x: auto; 
-    gap: 12px; 
-    padding: 10px 0 20px; 
-    scrollbar-width: none; 
-}
-.horizontal-scroll::-webkit-scrollbar { display: none; }
-
-.swipe-item { 
-    min-width: 160px; 
-    background: var(--white); 
-    border-radius: 15px; 
-    border: 1px solid #f1f5f9; 
-    overflow: hidden; 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.04); 
-    flex-shrink: 0; 
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-.swipe-item:active { transform: scale(0.95); }
-.swipe-item img { width: 100%; height: 110px; object-fit: cover; }
-.swipe-info { padding: 8px; font-size: 11px; font-weight: 700; text-align: center; color: var(--main); text-transform: uppercase; }
-
-
-
-#detailsPage {
-    /* ... baki purani settings ... */
-    overflow-y: auto !important; 
-    scroll-behavior: smooth !important;
-}
-
-
-
-
-
-/* --- Mobile Responsive Fixes (Original) --- */
+/* --- Mobile Responsive Fixes --- */
 @media (max-width: 400px) {
     .shop-grid { grid-template-columns: 1fr; }
     .card-img { height: 160px; }
-    h1 { font-size: 1.1rem; }
+    h1 { font-size: 1.2rem; }
+    .header-sub-bar { flex-direction: row; gap: 5px; }
+    .city-selector { padding: 10px 6px; font-size: 0.85rem; }
+    .action-buttons-group { flex-direction: row; }
+}
+/* --- Post Ke Andar Wale Order Button Ki Styling --- */
+.post-order-btn {
+    background: #10b981; /* Premium Green Color */
+    color: #ffffff;
+    border: none;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 12px;
+    width: 100%;
+    box-shadow: 0 4px 10px rgba(16, 185, 129, 0.15);
+    transition: background 0.2s, transform 0.1s;
 }
 
-
-.full-page {
-    position: fixed;
-    inset: 0;
-    background: var(--bg);
-    z-index: 1500;
-    display: none;
-    overflow-y: auto !important; /* Scroll enable rakhein */
-    scroll-behavior: smooth !important; /* Smooth animation ke liye */
+.post-order-btn:active {
+    transform: scale(0.98);
+    background: #059669;
 }
+
+.post-order-btn i {
+    font-size: 0.95rem;
+                                }
