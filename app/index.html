@@ -5,9 +5,132 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CityConnect Pro | Your Digital City</title>
     <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-  <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob: android-webview-video-pickle:; img-src * data: blob: android-webview-video-pickle:;">
-
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta http-equiv="Content-Security-Policy" content="default-src * 'unsafe-inline' 'unsafe-eval' data: blob: android-webview-video-pickle:; img-src * data: blob: android-webview-video-pickle:;">
+   
+  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeVxgEtAAAAAORD3V2gHWpJMVwGHMQJl2LFtSc1"></script>
+  
+    <style>
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .header-avatar-trigger {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 2px solid #2563eb;
+            object-fit: cover;
+            cursor: pointer;
+            background: #e2e8f0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .header-avatar-trigger:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 8px rgba(37, 99, 235, 0.3);
+        }
+        .app-drawer-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .app-drawer-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        .app-side-drawer {
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background: #ffffff;
+            box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+            z-index: 10000;
+            display: flex;
+            flex-direction: column;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .app-drawer-overlay.active .app-side-drawer {
+            right: 0;
+        }
+        .drawer-header {
+            padding: 30px 24px 20px;
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-bottom: 1px solid #e2e8f0;
+            position: relative;
+            text-align: center;
+        }
+        .drawer-close-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            color: #64748b;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .drawer-user-dp {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            border: 3px solid #2563eb;
+            object-fit: cover;
+            margin: 0 auto 12px;
+        }
+        .drawer-user-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+        .drawer-user-email {
+            font-size: 0.8rem;
+            color: #64748b;
+        }
+        .drawer-menu-container {
+            flex: 1;
+            padding: 20px 16px;
+            overflow-y: auto;
+        }
+        .drawer-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 12px 16px;
+            color: #334155;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 6px;
+        }
+        .drawer-menu-item:hover {
+            background: #f1f5f9;
+            color: #2563eb;
+        }
+        .drawer-menu-item.logout-action {
+            color: #ef4444;
+            margin-top: 20px;
+            border-top: 1px solid #f1f5f9;
+            padding-top: 16px;
+        }
+    </style>
 </head>
 <body>
 
@@ -18,11 +141,13 @@
                     <img src="logo1.png" alt="Logo" class="app-logo">
                     <h1>City<span>Connect</span></h1>
                 </div>
+                
                 <div class="header-actions">
-                    
                     <button class="icon-btn" onclick="openTrackingModal()" title="Track Order"><i class="fa fa-truck"></i></button>
                     <button class="icon-btn" onclick="openEditModal()" title="Merchant Dashboard"><i class="fa fa-store"></i></button>
-                    <button class="icon-btn" onclick="checkAdminPin()"><i class="fa fa-shield-alt"></i></button>
+                    <button class="icon-btn" onclick="checkAdminPin()" title="Admin Control"><i class="fa fa-shield-alt"></i></button>
+                    
+                    <img id="user-header-avatar" class="header-avatar-trigger" onclick="toggleAppDrawer(true)" src="https://ui-avatars.com/api/?name=User&background=2563eb&color=fff" alt="Profile">
                 </div>
             </div>
             
@@ -31,13 +156,13 @@
                     <i class="fa fa-map-marker-alt"></i>
                     <select id="cityFilter" size="2" onchange="loadShops()">
                         <option value="all" selected>All Cities</option>
+                        <option value="Jind">Jind</option> <!-- Defaults to Jind -->
                         <option value="Bahadurgarh">Bahadurgarh</option>
                         <option value="Panchkula">Panchkula</option>
                         <option value="Tohana">Tohana</option>
                         <option value="Panipat">Panipat</option>
                         <option value="Sonipat">Sonipat</option>
                         <option value="Narwana">Narwana</option>
-                        <option value="Jind">Jind</option>
                         <option value="Thanesar">Thanesar</option>
                         <option value="Sirsa">Sirsa</option>
                         <option value="Uchana">Uchana</option>
@@ -111,7 +236,8 @@
         <button class="fab" onclick="openModal()"><i class="fa fa-plus"></i></button>
     </div>
 
-    <div id="detailsPage" class="full-page">
+    <!-- DETAILS FULL PAGE VIEW -->
+    <div id="detailsPage" class="full-page" style="display:none;">
         <div class="page-nav">
             <button onclick="closeDetails()"><i class="fa fa-chevron-left"></i></button>
             <h2 id="detName">Shop Profile</h2>
@@ -133,6 +259,33 @@
         </div>
     </div>
 
+    <!-- PROFILE APP SIDE DRAWER -->
+    <div id="appDrawerOverlay" class="app-drawer-overlay" onclick="toggleAppDrawer(false)">
+        <div class="app-side-drawer" onclick="event.stopPropagation()">
+            <div class="drawer-header">
+                <button class="drawer-close-btn" onclick="toggleAppDrawer(false)">&times;</button>
+                <img id="drawer-user-avatar" class="drawer-user-dp" src="https://ui-avatars.com/api/?name=User&background=2563eb&color=fff" alt="User Avatar">
+                <div id="drawer-user-name" class="drawer-user-name">Loading Profile...</div>
+                <div id="drawer-user-email" class="drawer-user-email">please wait...</div>
+            </div>
+            <div class="drawer-menu-container">
+                <div class="drawer-menu-item" onclick="toggleAppDrawer(false)">
+                    <i class="fa-solid fa-user-gear"></i>
+                    <span>User Profile Details</span>
+                </div>
+                <div class="drawer-menu-item" onclick="toggleAppDrawer(false); openTrackingModal();">
+                    <i class="fa-solid fa-clock-history"></i>
+                    <span>Order History</span>
+                </div>
+                <div class="drawer-menu-item logout-action" onclick="triggerLogOut()">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Log Out</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADD SHOP MODAL -->
     <div id="shopModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>Add New Shop</h3><button onclick="closeModal()">&times;</button></div>
@@ -143,37 +296,12 @@
                     <input type="file" id="imgFile" hidden accept="image/*">
                 </div>
                 <input type="text" id="regName" placeholder="Shop Name">
-                <input type="text" id="regCity" placeholder="City (e.g. Tohana)">
+                <input type="text" id="regCity" placeholder="City (e.g. Jind)">
                 <div class="input-row">
                     <select id="regCat" size="2" class="scroll-select">
                         <option value="kirana" selected>Kirana</option>
                         <option value="medical">Medical</option>
                         <option value="gym">Gym</option>
-                        <option value="fast-food">Fast-Food</option>
-                        <option value="clothes">Clothes</option>
-                        <option value="suits">Ladies Suits</option>
-                        <option value="juice">Juice</option>
-                        <option value="fruits">Fruits</option>
-                        <option value="csc">CSC-Center</option>
-                        <option value="readyment">Readyment</option>
-                        <option value="shoes">Shoes</option>
-                        <option value="makeup">Ladies Items</option>
-                        <option value="barber">Barber</option>
-                        <option value="mobile">Mobile</option>
-                        <option value="electronic">Electronic</option>
-                        <option value="plumber">Plumber</option>
-                        <option value="lighting">Lighting</option>
-                        <option value="tent-hoise">Tent House</option>
-                        <option value="agensies">Agensies</option>
-                        <option value="bike-mechanic">Bike Mechanic</option>
-                        <option value="cars-mechanic">Cars Mechanic</option>
-                        <option value="tyre-repairing">Tyre Repairing</option>
-                        <option value="electric-schooty">Electric Schooty</option>
-                        <option value="electric-mechanic">Electric Mechanic</option>
-                        <option value="tractor-mechanic">Tractor Mechanic</option>
-                        <option value="tution-classes">Tution Classes</option>
-                        <option value="medical-lab">Medical Lab</option>
-                        <option value="library">Library</option>
                     </select>
                     <input type="tel" id="regPhone" placeholder="Phone Number">
                 </div>
@@ -185,84 +313,138 @@
         </div>
     </div>
 
+    <!-- ONLINE ORDER MODAL -->
     <div id="orderModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>🛍️ Place Online Order</h3><button onclick="closeOrderModal()">&times;</button></div>
             <div class="form-body">
                 <input type="text" id="ordName" placeholder="Aapka Naam">
                 <input type="tel" id="ordPhone" placeholder="Mobile Number">
-                <textarea id="ordAddr" placeholder="Poora Delivery Address (H.No, Gali, Landmark, City)" style="height:60px;"></textarea>
-                <textarea id="ordItems" placeholder="Samaan ki List (e.g. 5kg Cheeni, 2 Choti Bread...)" style="height:90px;"></textarea>
+                <textarea id="ordAddr" placeholder="Poora Delivery Address" style="height:60px;"></textarea>
+                <textarea id="ordItems" placeholder="Samaan ki List" style="height:90px;"></textarea>
                 <button class="primary-btn" style="background:#10b981;" onclick="placeOrder()">Confirm Order 🚀</button>
             </div>
         </div>
     </div>
 
+    <!-- LIVE TRACKING STATUS MODAL -->
     <div id="trackingModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>📍 Live Tracking Status</h3><button onclick="closeTrackingModal()">&times;</button></div>
-            <div id="trackResult">
-                <p style="text-align:center; color:#999; font-size:0.9rem;">Apni Order Tracking ID daal kar track karein...</p>
-            </div>
+            <div id="trackResult"><p style="text-align:center; color:#999;">Loading Tracker...</p></div>
         </div>
     </div>
 
+    <!-- MERCHANT DASHBOARD LOGIN MODAL -->
     <div id="editModal" class="modal">
         <div class="modal-content">
             <div class="modal-header"><h3>Merchant Dashboard</h3><button onclick="closeEditModal()">&times;</button></div>
-            
             <div id="editFormStep1">
-                <p style="font-size: 0.8rem; color: #666; margin-bottom: 10px;">Login to update your shop details.</p>
                 <input type="tel" id="loginPhone" placeholder="Registered Phone">
                 <input type="password" id="loginPin" placeholder="Enter PIN">
                 <button class="primary-btn" onclick="verifyMerchant()">Login</button>
             </div>
-
-            <div id="editFormStep2" style="display:none;">
-                <div class="add-stock-box">
-                    <h4 style="margin-bottom:10px;">Post Live Update</h4>
-                    <div class="upload-area small" style="padding:15px;" onclick="document.getElementById('itemFile').click()">
-                        <i class="fa fa-camera"></i>
-                        <p id="itemFileName" style="font-size:0.7rem;">Item Photo (Optional)</p>
-                        <input type="file" id="itemFile" hidden accept="image/*">
-                    </div>
-                    <textarea id="itemText" placeholder="Stock update ya offer likhein (e.g. Fresh Mangoes available!)" style="height:80px;"></textarea>
-                    <button class="primary-btn" id="postBtn" onclick="postUpdate()">Post Live Now</button>
-                </div>
-                
-                <div id="merchantOrderList" class="merchant-orders-area">
-                    <h4>📦 Incoming Customer Orders</h4>
-                    <p style="font-size: 0.8rem; color:#999;">Koi live order nahi mila.</p>
-                </div>
-
-                <h4 style="margin: 15px 0 10px;">Manage Your Posts:</h4>
-                <div id="merchantPostList" class="mini-list"></div>
+            <!-- Dynamic Merchant Panel Containers Hook Injection -->
+            <div id="editFormStep2" style="display:none; margin-top:15px;">
+                <textarea id="itemText" placeholder="Kuch naya stock update karein..." style="width:100%; height:60px; margin-bottom:10px;"></textarea>
+                <input type="file" id="itemFile" accept="image/*" style="margin-bottom:10px;">
+                <button id="postBtn" class="primary-btn" onclick="postUpdate()">Post Update</button>
+                <div id="merchantPostList" style="margin-top:15px; max-height:150px; overflow-y:auto;"></div>
+                <div id="merchantOrderList" style="margin-top:15px; max-height:200px; overflow-y:auto;"></div>
             </div>
         </div>
     </div>
 
-  <!-- ADMIN PANEL MODAL -->
-<div id="adminPanel" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y:auto;">
-    <div class="modal-content" style="background:#fff; margin:10% auto; padding:20px; width:90%; max-width:500px; border-radius:12px; position:relative; text-align:center;">
-        <span onclick="closeAdmin()" style="position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer; font-weight:bold;">&times;</span>
-        <h2 style="margin-top:0; color:#1e3a8a;"><i class="fa fa-user-shield"></i> Admin Dashboard</h2>
-        <hr style="border:0; border-top:1px solid #eee; margin-bottom:15px;">
-        
-        <!-- PENDING SHOPS CONTAINER -->
-        <div id="pendingList" style="max-height:250px; overflow-y:auto; margin-bottom:20px; border:1px solid #f0f0f0; padding:10px; border-radius:8px; background:#fafafa;">
-            <!-- Pending shops dynamic content here -->
-        </div>
+    <!-- ADMIN PANEL MODAL -->
+       <div id="adminPanel" class="modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); z-index:1000; overflow-y:auto;">
+        <div class="modal-content" style="background:#fff; margin:10% auto; padding:20px; width:90%; max-width:500px; border-radius:12px; position:relative; text-align:center;">
+            <span onclick="closeAdmin()" style="position:absolute; top:10px; right:15px; font-size:24px; cursor:pointer; font-weight:bold;">&times;</span>
+            <h2 style="margin-top:0; color:#1e3a8a;"><i class="fa fa-user-shield"></i> Admin Dashboard</h2>
+            <hr style="border:0; border-top:1px solid #eee; margin-bottom:15px;">
+            
+            <div id="pendingList" style="max-height:250px; overflow-y:auto; margin-bottom:20px; border:1px solid #f0f0f0; padding:10px; border-radius:8px; background:#fafafa;">
+                </div>
 
-        <!-- NEW: LIVE ORDERS CONTAINER FOR ADMIN -->
-        <div id="adminOrderList" style="max-height:350px; overflow-y:auto; border:1px solid #f0f0f0; padding:10px; border-radius:8px; background:#fafafa;">
-            <!-- Live global orders dynamic content here -->
+            <div id="adminOrderList" style="max-height:350px; overflow-y:auto; border:1px solid #f0f0f0; padding:10px; border-radius:8px; background:#fafafa;">
+                </div>
         </div>
     </div>
-</div>
 
 
+    <!-- CORE DEPENDENCY CONFIG FIREBASE IMPORTS -->
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+<script>
+  function onClick(e) {
+    e.preventDefault();
+    grecaptcha.enterprise.ready(async () => {
+      const token = await grecaptcha.enterprise.execute('6LeVxgEtAAAAAORD3V2gHWpJMVwGHMQJl2LFtSc1', {action: 'LOGIN'});
+    });
+  }
+</script>
+    <script>
+        // App Instance Configuration Object
+        window.firebaseConfig = {
+            apiKey: "AIzaSyBqfHQrsQbJcZq5Lc4ZgzEs1BVv1Pd4nsE",
+            authDomain: "local-1dea0.firebaseapp.com",
+            databaseURL: "https://local-1dea0-default-rtdb.firebaseio.com",
+            projectId: "local-1dea0",
+            storageBucket: "local-1dea0.firebasestorage.app",
+            messagingSenderId: "67361178496",
+            appId: "1:67361178496:web:3b8ca5f96a6c9ca5fa3765",
+            measurementId: "G-5394SPE8D8"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(window.firebaseConfig);
+        }
+
+        // Global Variable Mapping Layer
+        window.database = firebase.database();
+        window.db = firebase.database(); 
+        window.coreDb = firebase.firestore();
+        window.currentCategory = "all"; 
+
+        // Core View Triggers 
+        function toggleAppDrawer(open) {
+            const overlay = document.getElementById("appDrawerOverlay");
+            if (overlay) {
+                if (open) overlay.classList.add("active");
+                else overlay.classList.remove("active");
+            }
+        }
+
+        // Auth Monitor Interface Handler
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                window.coreDb.collection("users").doc(user.uid).get().then((doc) => {
+                    if (doc.exists) {
+                        const data = doc.data();
+                        document.getElementById("user-header-avatar").src = data.profilePic || "https://ui-avatars.com/api/?name=User";
+                        document.getElementById("drawer-user-avatar").src = data.profilePic || "https://ui-avatars.com/api/?name=User";
+                        document.getElementById("drawer-user-name").innerText = data.name || "User";
+                        document.getElementById("drawer-user-email").innerText = data.email || user.email;
+                    }
+                }).catch(e => console.log("Firestore error:", e));
+
+                setTimeout(() => {
+                    if (typeof loadShops === "function") {
+                        loadShops();
+                    }
+                }, 400);
+            } else {
+                window.location.href = "login.html";
+            }
+        });
+
+        function triggerLogOut() {
+            firebase.auth().signOut().then(() => { window.location.href = "login.html"; });
+        }
+    </script>
+
+    <!-- External Business Logic Integration File -->
     <script src="script.js"></script>
 </body>
 </html>
