@@ -1,3 +1,7 @@
+// ==========================================================================
+// CITYCONNECT PRO CORE ARCHITECTURE ENGINE - COMPLETE ORIGINAL MERGED ENGINE
+// ==========================================================================
+
 // --- 1. FIREBASE CONFIG ---
 const firebaseConfig = {
   apiKey: "AIzaSyBqfHQrsQbJcZq5Lc4ZgzEs1BVv1Pd4nsE",
@@ -14,10 +18,27 @@ firebase.initializeApp(firebaseConfig);
 const db = firebase.database();
 
 const IMGBB_KEY = "4bfd453f78fd8f1d35621d90eecaf679"; 
-const _0xAdmin = "NzQxOTEzMDI3Mg=="; 
+const _0xAdmin = "NzQxOTEzMDI3Mg=="; // Original Base64 PIN 7419130272
 
 let currentShopKey = null;
 let currentCategory = 'all';
+
+// Track Core Framework Additions
+let activeUserSession = null;
+let globalGuestId = "";
+
+// Global Image Input Sync Label Trigger Fix (Safe element attachment hook)
+setTimeout(() => {
+    const imgFileInput = document.getElementById('imgFile');
+    if(imgFileInput) {
+        imgFileInput.addEventListener('change', function() {
+            const nameLabel = document.getElementById('fileName');
+            if(nameLabel && this.files && this.files[0]) {
+                nameLabel.innerText = this.files[0].name.substring(0, 18) + "...";
+            }
+        });
+    }
+}, 1000);
 
 // --- 2. IMPROVED AUTO SCROLL LOGIC ---
 function scrollToPost(postId) {
@@ -79,7 +100,6 @@ function sendPush(title, msg, channelTag) {
     }
 }
 
-// FORCE TEST VIA BELL ICON - BYPASSING SECURE ORIGIN AND NOTIFICATION OBJECT CRASHES
 function triggerTestNotification() {
     if ('serviceWorker' in navigator) {
         navigator.serviceWorker.ready.then(registration => {
@@ -108,42 +128,83 @@ function fallbackLocalAlert(title, msg) {
 
 db.ref('shops').limitToLast(1).on('child_added', (snap) => {
     const shop = snap.val();
-    if (shop.timestamp && (Date.now() - shop.timestamp < 60000)) {
+    if (shop && shop.timestamp && (Date.now() - shop.timestamp < 60000)) {
         sendPush("Nayi Shop Live!", `${shop.name} ab aapke sheher mein live hai!`, "shop-alerts");
     }
 });
 
-// --- 4. UI & MODAL CONTROL ---
-function openModal() { document.getElementById('shopModal').style.display = 'block'; }
-function closeModal() { document.getElementById('shopModal').style.display = 'none'; }
-function openEditModal() { document.getElementById('editModal').style.display = 'block'; }
-function closeEditModal() { document.getElementById('editModal').style.display = 'none'; }
-function closeDetails() { document.getElementById('detailsPage').style.display = 'none'; }
-function closeAdmin() { document.getElementById('adminPanel').style.display = 'none'; }
+// --- USER SESSION CONTROLLER SYNC ---
+function initUserSession() {
+    if(!localStorage.getItem('cc_guest_token')) {
+        localStorage.setItem('cc_guest_token', 'GUEST-' + Math.floor(100000 + Math.random() * 900000));
+    }
+    globalGuestId = localStorage.getItem('cc_guest_token');
 
-function openOrderModal() { document.getElementById('orderModal').style.display = 'block'; }
-function closeOrderModal() { document.getElementById('orderModal').style.display = 'none'; }
-function openTrackingModal() { document.getElementById('trackingModal').style.display = 'block'; }
-function closeTrackingModal() { document.getElementById('trackingModal').style.display = 'none'; }
+    if (firebase.auth) {
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                activeUserSession = user;
+                const pName = document.getElementById('userProfileName');
+                if(pName) pName.innerText = user.displayName || "My Profile";
+            } else {
+                activeUserSession = null;
+                const pName = document.getElementById('userProfileName');
+                if(pName) pName.innerText = "Guest User";
+            }
+            if(document.getElementById('trackingModal') && document.getElementById('trackingModal').style.display === 'block') {
+                loadUserOrderHistory();
+            }
+        });
+    }
+}
+
+// --- 4. UI & MODAL CONTROL ---
+function openModal() { if(document.getElementById('shopModal')) document.getElementById('shopModal').style.display = 'block'; }
+function closeModal() { if(document.getElementById('shopModal')) document.getElementById('shopModal').style.display = 'none'; }
+function openEditModal() { if(document.getElementById('editModal')) document.getElementById('editModal').style.display = 'block'; }
+function closeEditModal() { if(document.getElementById('editModal')) document.getElementById('editModal').style.display = 'none'; }
+function closeDetails() { if(document.getElementById('detailsPage')) document.getElementById('detailsPage').style.display = 'none'; }
+// Fixed mapping to use inside original template context seamlessly
+function approve(key) { handleApproval(key); }
+function reject(key) { handleRejection(key); }
+function closeAdmin() { if(document.getElementById('adminPanel')) document.getElementById('adminPanel').style.display = 'none'; }
+
+function openOrderModal() { if(document.getElementById('orderModal')) document.getElementById('orderModal').style.display = 'block'; }
+function closeOrderModal() { if(document.getElementById('orderModal')) document.getElementById('orderModal').style.display = 'none'; }
+
+function openTrackingModal() { 
+    if(document.getElementById('trackingModal')) {
+        document.getElementById('trackingModal').style.display = 'block'; 
+        loadUserOrderHistory();
+    }
+}
+function closeTrackingModal() { if(document.getElementById('trackingModal')) document.getElementById('trackingModal').style.display = 'none'; }
 
 window.onclick = function(event) {
     const modals = ['shopModal', 'editModal', 'adminPanel', 'orderModal', 'trackingModal'];
     modals.forEach(id => {
         const m = document.getElementById(id);
-        if (event.target == m) m.style.display = "none";
+        if (m && event.target == m) m.style.display = "none";
     });
 }
 
 // --- 5. DATA LOADING & FILTERS (WITH CITY + ITEM SEARCH) ---
 function loadShops() {
-    const selectedCity = document.getElementById('cityFilter').value.toLowerCase();
-    const searchQuery = document.getElementById('searchInput').value.toLowerCase();
+    const cityEl = document.getElementById('cityFilter');
+    const searchEl = document.getElementById('searchInput');
+    const selectedCity = cityEl ? cityEl.value.toLowerCase() : 'all';
+    const searchQuery = searchEl ? searchEl.value.toLowerCase() : '';
 
     db.ref('shops').on('value', snap => {
         const grid = document.getElementById('shopList');
         if(!grid) return;
         grid.innerHTML = "";
         
+        if(!snap.exists()) {
+            grid.innerHTML = `<p style="grid-column:1/-1; text-align:center; color:#64748b; padding:20px;">Koi bhi shop live nahi hai.</p>`;
+            return;
+        }
+
         snap.forEach(child => {
             const v = child.val();
             const shopCity = (v.city || "").toLowerCase();
@@ -158,7 +219,7 @@ function loadShops() {
                 card.className = "shop-card";
                 card.onclick = () => openDetails(child.key);
                 card.innerHTML = `
-                    <img src="${v.img}" class="card-img">
+                    <img src="${v.img || 'https://via.placeholder.com/150'}" class="card-img" onerror="this.src='https://via.placeholder.com/150'">
                     <div class="card-info">
                         <h3>${v.name}</h3>
                         <p><i class="fa fa-map-marker-alt"></i> ${v.city || 'Local'}</p>
@@ -171,7 +232,7 @@ function loadShops() {
 
 function filterCat(cat, btn) {
     document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
-    btn.classList.add('active');
+    if(btn) btn.classList.add('active');
     currentCategory = cat;
     loadShops();
 }
@@ -179,24 +240,27 @@ function filterCat(cat, btn) {
 // --- 6. SHOP PROFILE DETAILS WITH DYNAMIC ITEM ORDERS ---
 function openDetails(id) {
     currentShopKey = id; 
-    document.getElementById('detailsPage').style.display = 'block';
-    document.getElementById('detailsPage').scrollTop = 0;
+    if(document.getElementById('detailsPage')) {
+        document.getElementById('detailsPage').style.display = 'block';
+        document.getElementById('detailsPage').scrollTop = 0;
+    }
 
     db.ref('shops/' + id).on('value', snap => {
         const v = snap.val();
         if(!v) return;
-        document.getElementById('detName').innerText = v.name;
-        document.getElementById('detImg').src = v.img;
-        document.getElementById('detAddr').innerHTML = `<b>Address:</b> ${v.addr}<br><b>City:</b> ${v.city}`;
-        document.getElementById('detCallBtn').href = "tel:" + v.phone;
+        if(document.getElementById('detName')) document.getElementById('detName').innerText = v.name;
+        if(document.getElementById('detImg')) document.getElementById('detImg').src = v.img || 'https://via.placeholder.com/150';
+        if(document.getElementById('detAddr')) document.getElementById('detAddr').innerHTML = `<b>Address:</b> ${v.addr}<br><b>City:</b> ${v.city}`;
+        if(document.getElementById('detCallBtn')) document.getElementById('detCallBtn').href = "tel:" + v.phone;
         
         const mapCont = document.getElementById('map-container');
-        if(v.mapLink) {
+        if(v.mapLink && mapCont) {
             mapCont.style.display = "block";
-            document.getElementById('mapLink').href = v.mapLink;
-        } else { mapCont.style.display = "none"; }
+            if(document.getElementById('mapLink')) document.getElementById('mapLink').href = v.mapLink;
+        } else if(mapCont) { mapCont.style.display = "none"; }
 
         const updatesDiv = document.getElementById('liveUpdates');
+        if(!updatesDiv) return;
         updatesDiv.innerHTML = "";
 
         if(v.updates) {
@@ -230,7 +294,7 @@ function openDetails(id) {
                 const cleanItemName = encodeURIComponent(upd.text.replace(/'|"/g, " ")); 
                 
                 div.innerHTML = `
-                    <small>${upd.time}</small>
+                    <small>${upd.time || ''}</small>
                     <p>${upd.text}</p>
                     ${upd.img ? `<img src="${upd.img}">` : ''}
                     <button class="post-order-btn" onclick="openOrderFromPost('${cleanItemName}')">
@@ -247,25 +311,34 @@ function openDetails(id) {
 function openOrderFromPost(encodedItemName) {
     const itemName = decodeURIComponent(encodedItemName);
     openOrderModal();
-    document.getElementById('ordItems').value = "Hi, mujhe aapki post se ye item chahiye:\n\"" + itemName + "\"\n\n[Baki details jaise Size, Color ya Quantity yahan likhein]";
+    if(document.getElementById('ordItems')) {
+        document.getElementById('ordItems').value = "Hi, mujhe aapki post se ye item chahiye:\n\"" + itemName + "\"\n\n[Baki details jaise Size, Color ya Quantity yahan likhein]";
+    }
 }
 
 // --- 8. FIXED CUSTOMER ONLINE ORDER SYSTEM (CRASH PROOF FALLBACK) ---
 function placeOrder() {
-    const custName = document.getElementById('ordName').value.trim();
-    const custPhone = document.getElementById('ordPhone').value.trim();
-    const custAddr = document.getElementById('ordAddr').value.trim();
-    const ordItems = document.getElementById('ordItems').value.trim();
+    const nameEl = document.getElementById('ordName');
+    const phoneEl = document.getElementById('ordPhone');
+    const addrEl = document.getElementById('ordAddr');
+    const itemsEl = document.getElementById('ordItems');
+
+    const custName = nameEl ? nameEl.value.trim() : '';
+    const custPhone = phoneEl ? phoneEl.value.trim() : '';
+    const custAddr = addrEl ? addrEl.value.trim() : '';
+    const ordItems = itemsEl ? itemsEl.value.trim() : '';
 
     if(!custName || !custPhone || !custAddr || !ordItems) return alert("Saari details bharna zaroori hai!");
 
     const currentYear = new Date().getFullYear();
     const randomNumber = Math.floor(1000 + Math.random() * 9000); 
     const customOrderID = "CC-" + currentYear + "-" + randomNumber;
+    const finalTrackingUID = activeUserSession ? activeUserSession.uid : globalGuestId;
 
     const orderData = {
         orderId: customOrderID, 
-        shopKey: currentShopKey,
+        shopKey: currentShopKey || "Global",
+        userId: finalTrackingUID,
         customerName: custName,
         customerPhone: custPhone,
         customerAddress: custAddr,
@@ -276,6 +349,10 @@ function placeOrder() {
     };
 
     db.ref('orders/' + customOrderID).set(orderData).then(() => {
+        let localOrders = JSON.parse(localStorage.getItem('cc_user_orders') || "[]");
+        localOrders.push(customOrderID);
+        localStorage.setItem('cc_user_orders', JSON.stringify(localOrders));
+
         if (navigator.clipboard && navigator.clipboard.writeText) {
             navigator.clipboard.writeText(customOrderID)
                 .then(() => showOrderSuccessAlert(customOrderID))
@@ -310,10 +387,10 @@ function showOrderSuccessAlert(id) {
 
 function finalizeOrderUI() {
     closeOrderModal();
-    document.getElementById('ordName').value = "";
-    document.getElementById('ordPhone').value = "";
-    document.getElementById('ordAddr').value = "";
-    document.getElementById('ordItems').value = "";
+    if(document.getElementById('ordName')) document.getElementById('ordName').value = "";
+    if(document.getElementById('ordPhone')) document.getElementById('ordPhone').value = "";
+    if(document.getElementById('ordAddr')) document.getElementById('ordAddr').value = "";
+    if(document.getElementById('ordItems')) document.getElementById('ordItems').value = "";
 }
 
 // --- 9. REAL-TIME ORDER TRACKING SYSTEM ---
@@ -342,7 +419,7 @@ function trackOrder() {
             if(order.status === "Delivered") statusBadgeColor = "#10b981";
 
             trackResultDiv.innerHTML = `
-                <div style="padding:15px; border-radius:10px; background:#f9fafb; border-left:5px solid ${statusBadgeColor}; line-height:1.6;">
+                <div style="padding:15px; border-radius:10px; background:#f9fafb; border-left:5px solid ${statusBadgeColor}; line-height:1.6; text-align:left;">
                     <h3 style="margin:0 0 10px; color:${statusBadgeColor};">Status: ${order.status}</h3>
                     <p><b>Dukan:</b> ${shopName}</p>
                     <p><b>Items:</b> ${order.items}</p>
@@ -362,25 +439,29 @@ function trackOrder() {
 
 // --- 10. REGISTRATION & MERCHANT CONTROL ---
 async function handleRegistration() {
-    const name = document.getElementById('regName').value;
-    const city = document.getElementById('regCity').value;
-    const phone = document.getElementById('regPhone').value.trim();
-    const file = document.getElementById('imgFile').files[0];
+    const nameEl = document.getElementById('regName');
+    const cityEl = document.getElementById('regCity');
+    const phoneEl = document.getElementById('regPhone');
+    const fileEl = document.getElementById('imgFile');
     const btn = document.getElementById('submitBtn');
+
+    const name = nameEl ? nameEl.value : '';
+    const city = cityEl ? cityEl.value : '';
+    const phone = phoneEl ? phoneEl.value.trim() : '';
+    const file = fileEl && fileEl.files ? fileEl.files[0] : null;
 
     if(!name || !city || !phone || !file) return alert("Saari details bharna zaroori hai!");
 
-    btn.innerText = "Processing...";
-    btn.disabled = true;
+    if(btn) { btn.innerText = "Processing..."; btn.disabled = true; }
 
     const url = await uploadToImgBB(file);
     if(url) {
         const data = {
             name, city, phone,
-            cat: document.getElementById('regCat').value,
-            mapLink: document.getElementById('regMap').value,
-            pin: document.getElementById('regPin').value,
-            addr: document.getElementById('regAddr').value,
+            cat: document.getElementById('regCat') ? document.getElementById('regCat').value : 'kirana',
+            mapLink: document.getElementById('regMap') ? document.getElementById('regMap').value : '',
+            pin: document.getElementById('regPin') ? document.getElementById('regPin').value : '',
+            addr: document.getElementById('regAddr') ? document.getElementById('regAddr').value : '',
             img: url,
             timestamp: Date.now()
         };
@@ -388,19 +469,27 @@ async function handleRegistration() {
             alert("Success! Admin approval ka wait karein.");
             location.reload();
         });
+    } else {
+        alert("Image upload fail ho gya, check api settings!");
+        if(btn) { btn.innerText = "Register Shop"; btn.disabled = false; }
     }
 }
 
 async function verifyMerchant() {
-    const phone = document.getElementById('loginPhone').value.trim();
-    const pin = document.getElementById('loginPin').value.trim();
+    const phoneEl = document.getElementById('loginPhone');
+    const pinEl = document.getElementById('loginPin');
+    const phone = phoneEl ? phoneEl.value.trim() : '';
+    const pin = pinEl ? pinEl.value.trim() : '';
+
+    if(!phone || !pin) return alert("Details daalein!");
+
     const snap = await db.ref('shops').orderByChild('phone').equalTo(phone).once('value');
     if(snap.exists()) {
         let match = false;
         snap.forEach(child => { if(child.val().pin == pin) { currentShopKey = child.key; match = true; }});
         if(match) {
-            document.getElementById('editFormStep1').style.display = 'none';
-            document.getElementById('editFormStep2').style.display = 'block';
+            if(document.getElementById('editFormStep1')) document.getElementById('editFormStep1').style.display = 'none';
+            if(document.getElementById('editFormStep2')) document.getElementById('editFormStep2').style.display = 'block';
             loadMerchantPosts(); 
             loadMerchantOrders(); 
         } else { alert("Galt PIN!"); }
@@ -408,12 +497,15 @@ async function verifyMerchant() {
 }
 
 async function postUpdate() {
-    const text = document.getElementById('itemText').value.trim();
-    const file = document.getElementById('itemFile').files[0];
+    const textEl = document.getElementById('itemText');
+    const fileEl = document.getElementById('itemFile');
+    const text = textEl ? textEl.value.trim() : '';
+    const file = fileEl && fileEl.files ? fileEl.files[0] : null;
+
     if(!text || !currentShopKey) return alert("Details bharein!");
 
     const btn = document.getElementById('postBtn');
-    btn.disabled = true; btn.innerText = "Posting...";
+    if(btn) { btn.disabled = true; btn.innerText = "Posting..."; }
 
     let imgUrl = "";
     if(file) imgUrl = await uploadToImgBB(file);
@@ -421,8 +513,8 @@ async function postUpdate() {
     const update = { text, img: imgUrl, time: new Date().toLocaleString(), timestamp: Date.now() };
     db.ref(`shops/${currentShopKey}/updates`).push(update).then(() => {
         alert("Post Live!");
-        document.getElementById('itemText').value = ""; 
-        btn.disabled = false; btn.innerText = "Post Live Now";
+        if(document.getElementById('itemText')) document.getElementById('itemText').value = ""; 
+        if(btn) { btn.disabled = false; btn.innerText = "Post Live Now"; }
     });
 }
 
@@ -504,10 +596,13 @@ function deletePost(key) {
 // --- 13. ADMIN FUNCTIONS (UPDATED WITH GLOBAL ORDER VIEW) ---
 function checkAdminPin() { 
     const pin = prompt("Admin PIN:");
-    if(btoa(pin) === _0xAdmin) { 
-        document.getElementById('adminPanel').style.display = 'block'; 
-        loadPending(); 
-        loadAdminOrders(); // Admin panel khulte hi saare orders load honge
+    if(!pin) return;
+    if(btoa(pin.trim()) === _0xAdmin) { 
+        if(document.getElementById('adminPanel')) {
+            document.getElementById('adminPanel').style.display = 'block'; 
+            loadPending(); 
+            loadAdminOrders(); 
+        }
     } else { alert("Incorrect!"); }
 }
 
@@ -525,7 +620,7 @@ function loadPending() {
         snap.forEach(child => {
             const v = child.val();
             const div = document.createElement('div');
-            div.style = "padding:12px; border:1px solid #eee; background:#fff; margin-bottom:8px; border-radius:10px; font-size:0.85rem;";
+            div.style = "padding:12px; border:1px solid #eee; background:#fff; margin-bottom:8px; border-radius:10px; font-size:0.85rem; text-align:left;";
             div.innerHTML = `
                 <b>${v.name}</b> (${v.city})<br>
                 <small>Phone: ${v.phone}</small><br>
@@ -538,7 +633,29 @@ function loadPending() {
     });
 }
 
-// ADMIN DASHBOARD KE LIYE GLOBAL ORDERS LISTENER
+function handleApproval(key) {
+    if(confirm("Confirm approve this merchant?")) {
+        db.ref(`pending_shops/${key}`).once('value', snap => {
+            if(snap.exists()) {
+                const shopData = snap.val();
+                db.ref(`shops/${key}`).set(shopData).then(() => {
+                    db.ref(`pending_shops/${key}`).remove().then(() => {
+                        alert("✅ Shop approved and live!");
+                    });
+                }).catch(err => alert("Approval failure: " + err.message));
+            }
+        });
+    }
+}
+
+function handleRejection(key) {
+    if(confirm("Are you sure to reject this request?")) {
+        db.ref(`pending_shops/${key}`).remove().then(() => {
+            alert("🗑️ Request rejected successfully.");
+        }).catch(err => alert("Rejection database failure: " + err.message));
+    }
+}
+
 function loadAdminOrders() {
     db.ref('orders').on('value', snap => {
         const list = document.getElementById('adminOrderList');
@@ -550,7 +667,6 @@ function loadAdminOrders() {
             return;
         }
 
-        // Saare orders ko reverse order (latest first) mein dikhane ke liye array banayenge
         const ordersArray = [];
         snap.forEach(child => {
             ordersArray.unshift({ key: child.key, data: child.val() });
@@ -568,7 +684,6 @@ function loadAdminOrders() {
 
             div.style = `padding:12px; border:1px solid #eee; background:#f9fafb; border-left:5px solid ${statusColor}; margin-top:8px; border-radius:8px; font-size:0.85rem; text-align:left; line-height:1.5;`;
             
-            // Shop details fetch karke naam dikhane ke liye
             db.ref(`shops/${ord.shopKey}`).once('value', shopSnap => {
                 const shopName = shopSnap.exists() ? shopSnap.val().name : "Unknown/Deleted Shop";
                 
@@ -600,7 +715,6 @@ function loadAdminOrders() {
     });
 }
 
-// Admin panel se kisi fake/galt order ko delete karne ke liye helper function
 function deleteOrderFromAdmin(orderId) {
     if(confirm("Kya aap is order ko system se permanent delete karna chahte hain?")) {
         db.ref(`orders/${orderId}`).remove()
@@ -609,8 +723,93 @@ function deleteOrderFromAdmin(orderId) {
     }
 }
 
+// ==========================================
+// [FIXED SECURE] 14. USERS ORDER HISTORY TRACKING SYNCHRONIZER
+// ==========================================
+function loadUserOrderHistory() {
+    const trackResultDiv = document.getElementById("trackResult");
+    if (!trackResultDiv) return;
 
+    trackResultDiv.innerHTML = `<p style="text-align:center; padding:10px; font-size:0.85rem;">Aapke orders fetch ho rahe hain...</p>`;
+
+    // Strict Check: Sirf current active user ya guest token hi filter query me jayega
+    const activeSearchUID = activeUserSession ? activeUserSession.uid : globalGuestId;
+    
+    if (!activeSearchUID) {
+        trackResultDiv.innerHTML = `<p style="text-align:center; color:#64748b; padding:20px; font-size:0.9rem;">Session clear. Koi tracking token nahi mila.</p>`;
+        return;
+    }
+
+    // Direct Firebase Query: Kisi bhi haal me all users ka data load nahi hoga, sirf matching uid load hogi
+    db.ref('orders').orderByChild('userId').equalTo(activeSearchUID).once('value', snapshot => {
+        let ordersMap = {};
+
+        if (snapshot.exists()) {
+            snapshot.forEach(child => {
+                ordersMap[child.key] = child.val();
+            });
+        }
+
+        // Render functions me data pass karne se pehle cross check complete
+        renderHistoryHTML(ordersMap, trackResultDiv);
+    }).catch(err => {
+        console.error("Order history security block failure:", err);
+        trackResultDiv.innerHTML = `<p style="text-align:center; color:red; padding:10px;">Orders load karne me error aaya.</p>`;
+    });
+}
+
+function renderHistoryHTML(ordersMap, targetDiv) {
+    const entries = Object.entries(ordersMap).sort((a,b) => b[1].timestamp - a[1].timestamp);
+
+    if (entries.length === 0) {
+        targetDiv.innerHTML = `<p style="text-align:center; color:#64748b; padding:20px; font-size:0.9rem;">Aapka koi purana order nahi mila.</p>`;
+        return;
+    }
+
+    let htmlContent = `<div style="display:flex; flex-direction:column; gap:10px; max-height:350px; overflow-y:auto;">`;
+    let itemsProcessed = 0;
+    const activeSearchUID = activeUserSession ? activeUserSession.uid : globalGuestId;
+
+    entries.forEach(([orderId, order]) => {
+        // Double-Layer Security Shield: Render hone se pehle loop ke andar bhi confirm karega ki dusre ka data leak na ho
+        if (order.userId !== activeSearchUID) {
+            itemsProcessed++;
+            if (itemsProcessed === entries.length) {
+                htmlContent += `</div>`;
+                targetDiv.innerHTML = htmlContent;
+            }
+            return; // Skip if user ID doesn't match
+        }
+
+        db.ref(`shops/${order.shopKey}`).once('value', shopSnap => {
+            const shopName = shopSnap.exists() ? shopSnap.val().name : "Local Merchant";
+            let clr = "#eab308"; let bg = "#fef9c3";
+            if (order.status === "Delivered") { clr = "#16a34a"; bg = "#dcfce7"; }
+            if (order.status === "Cancelled") { clr = "#dc2626"; bg = "#fee2e2"; }
+
+            htmlContent += `
+                <div style="border:1px solid #e2e8f0; border-radius:8px; background:#fff; padding:12px; text-align:left;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.85rem;">
+                        <b>${shopName}</b>
+                        <span style="background:${bg}; color:${clr}; padding:2px 8px; border-radius:10px; font-size:0.75rem; font-weight:bold;">${order.status || 'Pending'}</span>
+                    </div>
+                    <p style="margin:5px 0; font-size:0.85rem; color:#475569;">${order.items}</p>
+                    <small style="color:#94a3b8; font-size:0.7rem;">ID: #${orderId}</small>
+                </div>`;
+
+            itemsProcessed++;
+            if (itemsProcessed === entries.length) {
+                htmlContent += `</div>`;
+                targetDiv.innerHTML = htmlContent;
+            }
+        });
+    });
+}
+
+
+// --- 15. WINDOW INITIALIZATION RUNNER ---
 window.onload = () => {
+    initUserSession();
     requestPermission();
     loadShops();
     const sInput = document.getElementById('searchInput');
