@@ -261,12 +261,27 @@
     <!-- PROFILE APP SIDE DRAWER -->
     <div id="appDrawerOverlay" class="app-drawer-overlay" onclick="toggleAppDrawer(false)">
         <div class="app-side-drawer" onclick="event.stopPropagation()">
-            <div class="drawer-header">
-                <button class="drawer-close-btn" onclick="toggleAppDrawer(false)">&times;</button>
-                <img id="drawer-user-avatar" class="drawer-user-dp" src="https://ui-avatars.com/api/?name=User&background=2563eb&color=fff" alt="User Avatar">
-                <div id="drawer-user-name" class="drawer-user-name">Loading Profile...</div>
-                <div id="drawer-user-email" class="drawer-user-email">please wait...</div>
-            </div>
+          <!-- Drawer Header Section -->
+<!-- Drawer Header -->
+<div class="drawer-header">
+    <button class="drawer-close-btn" onclick="toggleAppDrawer(false)">&times;</button>
+    
+    <!-- Profile Image Wrapper -->
+    <div class="profile-img-wrapper">
+        <img id="drawer-user-avatar" class="drawer-user-dp" src="assets/avatar.jpg" alt="User Avatar">
+        
+        <!-- Camera Icon Overlay -->
+        <label for="profileImgInput" class="camera-icon-btn">
+            <i class="fa fa-camera"></i>
+        </label>
+        <input type="file" id="profileImgInput" hidden accept="image/*" onchange="updateProfileImage(this.files[0])">
+    </div>
+    
+    <div id="drawer-user-name" class="drawer-user-name">Vishu</div>
+    <div id="drawer-user-email" class="drawer-user-email">vk8080@gmail.com</div>
+</div>
+
+
             <div class="drawer-menu-container">
                 <div class="drawer-menu-item" onclick="toggleAppDrawer(false)">
                     <i class="fa-solid fa-user-gear"></i>
@@ -439,4 +454,4 @@
     <!-- External Business Logic Integration File -->
     <script src="script.js"></script>
 </body>
-</html>
+                    </html>
