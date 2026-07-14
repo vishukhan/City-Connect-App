@@ -40,6 +40,39 @@ setTimeout(() => {
     }
 }, 1000);
 
+
+// Profile Image Update Logic
+document.getElementById('profileImgInput').addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const user = firebase.auth().currentUser;
+    if (!user) return alert("Pehle login karein!");
+
+    // 1. Image Upload to ImgBB
+    const imgUrl = await uploadToImgBB(file);
+    
+    if (imgUrl) {
+        // 2. Firestore mein User Profile update
+        window.coreDb.collection("users").doc(user.uid).set({
+            profilePic: imgUrl
+        }, { merge: true }).then(() => {
+            // 3. UI update
+            document.getElementById("user-header-avatar").src = imgUrl;
+            document.getElementById("drawer-user-avatar").src = imgUrl;
+            alert("Profile photo update ho gayi!");
+        }).catch(err => {
+            console.error("Error updating profile:", err);
+            alert("Update mein error aaya.");
+        });
+    } else {
+        alert("Image upload fail ho gayi.");
+    }
+});
+
+
+
+
 // --- 2. IMPROVED AUTO SCROLL LOGIC ---
 function scrollToPost(postId) {
     setTimeout(() => {
