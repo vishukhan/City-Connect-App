@@ -92,6 +92,48 @@ h1 span { color: var(--main); }
     font-size: 0.9rem; 
 }
 
+
+/* Profile Wrapper */
+.profile-img-wrapper {
+    position: relative;
+    display: inline-block;
+    margin-bottom: 10px;
+}
+
+/* User Profile Image */
+.drawer-user-dp {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid #e2e8f0;
+}
+
+/* Camera Icon Position */
+.camera-icon-btn {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #2563eb;
+    color: white;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.8rem;
+    border: 2px solid white;
+    transition: 0.3s;
+}
+
+.camera-icon-btn:hover {
+    background: #1d4ed8;
+}
+
+
+
 /* --- NEW: Fast Tracking Bar (Home Page Layout) --- */
 .tracking-fast-bar {
     display: flex;
@@ -450,4 +492,4 @@ textarea { resize: none; font-family: inherit; }
 
 .post-order-btn i {
     font-size: 0.95rem;
-                                }
+    }
