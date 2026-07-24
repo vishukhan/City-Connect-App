@@ -6,9 +6,6 @@
     <title>CityConnect | Jind's Digital Directory</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Hind:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    
-  <script src="https://www.google.com/recaptcha/enterprise.js?render=6LeVxgEtAAAAAORD3V2gHWpJMVwGHMQJl2LFtSc1"></script>
-
     <style>
         :root {
             --primary: #0062ff;
@@ -47,7 +44,7 @@
         .hero-text p { font-size: 1rem; color: #64748b; margin-bottom: 2.5rem; }
 
         .download-options { display: flex; flex-direction: column; gap: 15px; }
-        .btn { padding: 16px 32px; border-radius: 12px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 12px; transition: 0.3s; width: fit-content; }
+        .btn { padding: 16px 32px; border-radius: 12px; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 12px; transition: 0.3s; width: fit-content; border: none; cursor: pointer; }
         .btn-android { background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(0,98,255,0.2); }
         .btn-iphone { background: var(--dark); color: white; border: 1px solid rgba(255,255,255,0.1); }
         .btn:hover { transform: translateY(-3px); opacity: 0.9; }
@@ -82,10 +79,69 @@
         .how-it-works { background: #0f172a; color: white; border-radius: 50px 50px 0 0; }
         .step-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 3rem; margin-top: 4rem; }
         .step h3 { font-size: 1.5rem; margin-bottom: 15px; color: var(--secondary); }
+
+        /* --- Reviews Section Styles --- */
+        .reviews-section { background: var(--white); }
+        .rating-summary-card {
+            background: var(--light-bg);
+            padding: 30px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 2rem;
+            margin-bottom: 3rem;
+            border: 1px solid #e2e8f0;
+        }
+        .big-rating { font-size: 3.5rem; font-weight: 700; color: var(--dark); line-height: 1; }
+        .stars-gold { color: #ffc107; font-size: 1.2rem; }
+        
+        .review-layout {
+            display: grid;
+            grid-template-columns: 1fr 1.5fr;
+            gap: 40px;
+        }
+        .review-form-card {
+            background: var(--light-bg);
+            padding: 30px;
+            border-radius: 20px;
+            border: 1px solid #e2e8f0;
+            height: fit-content;
+        }
+        .form-group { margin-bottom: 18px; }
+        .form-group label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #475569; }
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            font-family: inherit;
+            outline: none;
+            transition: 0.3s;
+        }
+        .form-input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(0,98,255,0.1); }
+        
+        .star-rating-select { display: flex; gap: 8px; font-size: 1.5rem; color: #cbd5e1; cursor: pointer; }
+        .star-rating-select i.active { color: #ffc107; }
+
+        .reviews-list { display: flex; flex-direction: column; gap: 20px; max-height: 500px; overflow-y: auto; padding-right: 5px; }
+        .review-card {
+            background: var(--light-bg);
+            padding: 20px;
+            border-radius: 15px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+        .review-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+        .reviewer-name { font-weight: 600; color: var(--dark); font-size: 0.95rem; }
+        .review-date { font-size: 0.75rem; color: #94a3b8; }
+        .review-text { font-size: 0.9rem; color: #475569; }
   
         /* --- FAQ Section --- */
-        .faq { background: var(--white); }
-        .faq-item { max-width: 800px; margin: 0 auto 15px; padding: 20px; background: var(--light-bg); border-radius: 12px; }
+        .faq { background: var(--light-bg); }
+        .faq-item { max-width: 800px; margin: 0 auto 15px; padding: 20px; background: var(--white); border-radius: 12px; }
         .faq-item h4 { color: var(--primary); margin-bottom: 5px; }
 
         @media (max-width: 968px) {
@@ -93,9 +149,9 @@
             .hero-text h1 { font-size: 2.8rem; }
             .download-options { align-items: center; }
             .btn { width: 100%; max-width: 320px; }
+            .review-layout { grid-template-columns: 1fr; }
         }
 
-       
     /* --- Professional Footer Styles --- */
     .main-footer {
         background: #0f172a;
@@ -215,16 +271,15 @@
 </head>
 <body>
 
-          <nav>
-
-            <a href="#" class="logo">City<span>Connect</span></a>
-            <div style="font-weight: 600; font-size: 0.8rem; color: var(--primary); letter-spacing: 1px;">JIND,HARYANA</div>
-          </nav>
+    <nav>
+        <a href="#" class="logo">City<span>Connect</span></a>
+        <div style="font-weight: 600; font-size: 0.8rem; color: var(--primary); letter-spacing: 1px;"> HARYANA</div>
+    </nav>
 
     <section class="hero">
         <div class="hero-text">
             <h1><span>City Connect</span></h1>
-            <p> हरियाणा के किसी भी शहर की दुकान का लाइव स्टॉक और धाकड़ ऑफर्स अब सीधा आपके फोन पर। बस एक क्लिक में दुकानदार से कनेक्ट करें और शॉपिंग को बनाएँ स्मार्ट</p>
+            <p> हरियाणा के किसी भी शहर की दुकान का लाइव स्टॉक और धाकड़ ऑफर्स अब सीधा आपके फोन पर । बस एक क्लिक में दुकानदार से कनेक्ट करें और शॉपिंग को बनाएँ स्मार्ट</p>
             
             <div class="download-options">
                 <a href="https://github.com/vishukhan/City-Connect/releases/download/V1.0.0.0/City.Connect.apk" class="btn btn-android">
@@ -235,21 +290,21 @@
                     </div>
                 </a>
                
-          <a href="./app/" class="btn btn-iphone">
-          <i class="fab fa-apple fa-2x"></i>
-          <div style="text-align: left;">
-          <span style="font-size: 0.7rem; display: block; opacity: 0.8;">Website for</span>
-        iPhone & Android
-        </div>
-        </a> 
+                <a href="./app/" class="btn btn-iphone">
+                    <i class="fab fa-apple fa-2x"></i>
+                    <div style="text-align: left;">
+                        <span style="font-size: 0.7rem; display: block; opacity: 0.8;">Website for</span>
+                        iPhone & Android
+                    </div>
+                </a> 
 
-        <a href="./app/" class="btn btn-android">
-          <i class="fa-brands fa-wordpress-simple fa-2x"></i>
-          <div style="text-align: left;">
-          <span style="font-size: 0.7rem; display: block; opacity: 0.8;">Website for</span>
-          Our Website
-        </div>
-        </a>
+                <a href="./app/" class="btn btn-android">
+                    <i class="fa-brands fa-wordpress-simple fa-2x"></i>
+                    <div style="text-align: left;">
+                        <span style="font-size: 0.7rem; display: block; opacity: 0.8;">Website for</span>
+                        Our Website
+                    </div>
+                </a>
             </div>
         </div>
 
@@ -318,19 +373,71 @@
         </div>
         <div class="step-grid">
             <div class="step">
-                
                 <h3>ऐप इंस्टॉल करें</h3>
-                <p> हमारी वेबसाइट से APK डाउनलोड करके इंस्टॉल करें।</p>
+                <p>हमारी वेबसाइट से APK डाउनलोड करके इंस्टॉल करें।</p>
             </div>
             <div class="step">
-               
                 <h3>दुकान चुनें</h3>
                 <p>अपनी पसंदीदा कैटेगरी या नाम से दुकान सर्च करें।</p>
             </div>
             <div class="step">
-                
                 <h3>सीधा संपर्क</h3>
                 <p>स्टॉक चेक करें और सीधा दुकानदार को कॉल मिलाएँ।</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Review System Section -->
+    <section class="section-padding reviews-section" id="reviews">
+        <div class="text-center">
+            <h2>यूज़र्स के अनुभव (Reviews)</h2>
+            <p>जानिए लोग CityConnect ऐप के बारे में क्या कह रहे हैं</p>
+        </div>
+
+        <div class="rating-summary-card">
+            <div style="text-align: center;">
+                <div class="big-rating" id="avgRating">4.8</div>
+                <div class="stars-gold" id="avgStars">
+                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                </div>
+                <div style="font-size: 0.8rem; color: #64748b; margin-top: 5px;" id="totalReviewsCount">Based on 3 Reviews</div>
+            </div>
+            <div style="text-align: center;">
+                <p style="font-size: 1.1rem; font-weight: 600; color: var(--primary);">100% Verified Feedback</p>
+                <p style="font-size: 0.85rem; color: #64748b;">   हरियाणा के स्थानीय यूज़र्स का भरोसा</p>
+            </div>
+        </div>
+
+        <div class="review-layout">
+            <!-- Review Submission Form -->
+            <div class="review-form-card">
+                <h3 style="margin-bottom: 15px; font-size: 1.2rem; color: var(--dark);">अपना रिव्यू दें</h3>
+                <form id="reviewForm">
+                    <div class="form-group">
+                        <label>आपका नाम</label>
+                        <input type="text" id="userName" class="form-input" placeholder="जैसे: Rahul Sharma" required>
+                    </div>
+                    <div class="form-group">
+                        <label>रेटिंग दें</label>
+                        <div class="star-rating-select" id="starSelector">
+                            <i class="fas fa-star active" data-rating="1"></i>
+                            <i class="fas fa-star active" data-rating="2"></i>
+                            <i class="fas fa-star active" data-rating="3"></i>
+                            <i class="fas fa-star active" data-rating="4"></i>
+                            <i class="fas fa-star active" data-rating="5"></i>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>आपका अनुभव / कमेंट</label>
+                        <textarea id="userComment" class="form-input" rows="4" placeholder="ऐप आपको कैसी लगी?" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-android" style="width: 100%; justify-content: center;">Submit Review</button>
+                </form>
+            </div>
+
+            <!-- Review Cards List -->
+            <div class="reviews-list" id="reviewsContainer">
+                <!-- Static Default Reviews -->
             </div>
         </div>
     </section>
@@ -353,68 +460,166 @@
         </div>
     </section>
 
-    
+    <footer class="main-footer">
+        <div class="footer-grid">
+            <div class="footer-brand">
+                <a href="#" class="logo">City<span>Connect</span></a>
+                <p>हरियाणा का अपना डिजिटल बाज़ार। हम स्थानीय दुकानदारों और ग्राहकों को एक प्लेटफॉर्म पर लाते हैं।</p>
+                <div style="margin-top: 20px;">
+                    <p style="font-size: 0.8rem;"><i class="fas fa-envelope" style="color: var(--secondary);"></i> help@cityconnect.in</p>
+                    <p style="font-size: 0.8rem;"><i class="fas fa-map-marker-alt" style="color: var(--secondary);"></i> Haryana </p>
+                </div>
+            </div>
 
-<footer class="main-footer">
-    <div class="footer-grid">
-        <div class="footer-brand">
-            <a href="#" class="logo">City<span>Connect</span></a>
-            <p>हरियाणा का अपना डिजिटल बाज़ार। हम स्थानीय दुकानदारों और ग्राहकों को एक प्लेटफॉर्म पर लाते हैं।</p>
-            <div style="margin-top: 20px;">
-                <p style="font-size: 0.8rem;"><i class="fas fa-envelope" style="color: var(--secondary);"></i> help@cityconnect.in</p>
-                <p style="font-size: 0.8rem;"><i class="fas fa-map-marker-alt" style="color: var(--secondary);"></i> Haryana </p>
+            <div>
+                <h4 class="footer-header">Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#how-it-works">How it works</a></li>
+                    <li><a href="#reviews">Reviews</a></li>
+                    <li><a href="#faq">FAQ</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-header">Categories</h4>
+                <ul class="footer-links">
+                    <li><a href="#">Food & Cafe</a></li>
+                    <li><a href="#">Fashion</a></li>
+                    <li><a href="#">Medical</a></li>
+                    <li><a href="#">Electronics</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-header">Android App</h4>
+                <div class="qr-container">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://github.com/vishukhan/City-Connect-App/releases/download/V1.0.0.0/City.Connect.apk" alt="QR Code">
+                    <span class="qr-text">Scan for APK V1.0.0</span>
+                </div>
             </div>
         </div>
 
-        <div>
-            <h4 class="footer-header">Quick Links</h4>
-            <ul class="footer-links">
-                <li><a href="#">Home</a></li>
-                <li><a href="#">Features</a></li>
-                <li><a href="#how-it-works">How it works</a></li>
-                <li><a href="#faq">FAQ</a></li>
-            </ul>
-        </div>
-
-        <div>
-            <h4 class="footer-header">Categories</h4>
-            <ul class="footer-links">
-                <li><a href="#">Food & Cafe</a></li>
-                <li><a href="#">Fashion</a></li>
-                <li><a href="#">Medical</a></li>
-                <li><a href="#">Electronics</a></li>
-            </ul>
-        </div>
-
-        <div>
-            <h4 class="footer-header">Android App</h4>
-            <div class="qr-container">
-                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=https://github.com/vishukhan/City-Connect-App/releases/download/V1.0.0.0/City.Connect.apk" alt="QR Code">
-                <span class="qr-text">Scan for APK V1.0.0</span>
+        <div class="footer-bottom">
+            <div class="dev-credit">
+                © 2026 CityConnect. Designed & Developed by <b>Vishal (Vishu)</b>
+            </div>
+            <div class="social-icons">
+                <a href="https://www.facebook.com/share/18WRQ6By5m/"><i class="fab fa-facebook-f"></i></a>
+                <a href="https://www.instagram.com/cityconnect2026?igsh=MTduaHVhMWN2b29qNw=="><i class="fab fa-instagram"></i></a>
+                <a href="t.me/Vishukhan143"><i class="fa-brands fa-telegram"></i></a>
+                <a href="https://wa.me/message/MRFDVSDLJC3YA1"><i class="fa-brands fa-whatsapp"></i></a>
             </div>
         </div>
-    </div>
+    </footer>
 
-    <div class="footer-bottom">
-        <div class="dev-credit">
-            © 2026 CityConnect. Designed & Developed by <b>Vishal (Vishu)</b>
-        </div>
-        <div class="social-icons">
-            <a href="https://www.facebook.com/share/18WRQ6By5m/"><i class="fab fa-facebook-f"></i></a>
-            <a href="https://www.instagram.com/cityconnect2026?igsh=MTduaHVhMWN2b29qNw=="><i class="fab fa-instagram"></i></a>
-            <a href="t.me/Vishukhan143"><i class="fa-brands fa-telegram"></i></a>
-            <a href="https://wa.me/message/MRFDVSDLJC3YA1"><i class="fa-brands fa-whatsapp"></i></a>
-        </div>
-    </div>
-</footer>
+    <!-- Review System Script -->
+    <script>
+        const initialReviews = [
+            { name: "Aman Verma", rating: 5, comment: "Bhut hi badiya app h Jind k market k lia! Stock ghar baithe pta chal jata h.", date: "12 May 2026" },
+            { name: "Suresh Kumar", rating: 5, comment: "Dukandaro se direct call pe baat ho jati h, best local directory app.", date: "05 June 2026" },
+            { name: "Pooja Saini", rating: 4, comment: "Superb UI aur fast service. Jind market k offers easily mil jate h.", date: "20 July 2026" }
+        ];
 
-<script>
-  function onClick(e) {
-    e.preventDefault();
-    grecaptcha.enterprise.ready(async () => {
-      const token = await grecaptcha.enterprise.execute('6LeVxgEtAAAAAORD3V2gHWpJMVwGHMQJl2LFtSc1', {action: 'LOGIN'});
-    });
-  }
-</script>
+        let selectedRating = 5;
+
+        // Load reviews from local storage or set initial
+        function getReviews() {
+            const saved = localStorage.getItem('cityconnect_reviews');
+            return saved ? JSON.parse(saved) : initialReviews;
+        }
+
+        function saveReviews(reviews) {
+            localStorage.setItem('cityconnect_reviews', JSON.stringify(reviews));
+        }
+
+        // Star rating selection in form
+        const stars = document.querySelectorAll('#starSelector i');
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.getAttribute('data-rating'));
+                stars.forEach((s, idx) => {
+                    if (idx < selectedRating) {
+                        s.classList.add('active');
+                    } else {
+                        s.classList.remove('active');
+                    }
+                });
+            });
+        });
+
+        // Render Stars HTML
+        function renderStars(rating) {
+            let html = '';
+            for (let i = 1; i <= 5; i++) {
+                if (i <= rating) {
+                    html += '<i class="fas fa-star stars-gold"></i>';
+                } else {
+                    html += '<i class="far fa-star stars-gold"></i>';
+                }
+            }
+            return html;
+        }
+
+        // Render Reviews
+        function displayReviews() {
+            const reviews = getReviews();
+            const container = document.getElementById('reviewsContainer');
+            container.innerHTML = '';
+
+            let totalRating = 0;
+
+            reviews.slice().reverse().forEach(r => {
+                totalRating += r.rating;
+                const card = document.createElement('div');
+                card.className = 'review-card';
+                card.innerHTML = `
+                    <div class="review-header">
+                        <span class="reviewer-name">${r.name}</span>
+                        <span class="review-date">${r.date}</span>
+                    </div>
+                    <div style="margin-bottom: 8px;">${renderStars(r.rating)}</div>
+                    <p class="review-text">${r.comment}</p>
+                `;
+                container.appendChild(card);
+            });
+
+            // Update stats
+            const avg = (totalRating / reviews.length).toFixed(1);
+            document.getElementById('avgRating').innerText = avg;
+            document.getElementById('totalReviewsCount').innerText = `Based on ${reviews.length} Reviews`;
+        }
+
+        // Handle Review Form Submission
+        document.getElementById('reviewForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const name = document.getElementById('userName').value.trim();
+            const comment = document.getElementById('userComment').value.trim();
+
+            if (!name || !comment) return;
+
+            const newReview = {
+                name: name,
+                rating: selectedRating,
+                comment: comment,
+                date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+            };
+
+            const reviews = getReviews();
+            reviews.push(newReview);
+            saveReviews(reviews);
+
+            displayReviews();
+
+            // Reset Form
+            this.reset();
+            selectedRating = 5;
+            stars.forEach(s => s.classList.add('active'));
+            alert('Aapka review successfully add ho gaya h!');
+        });
+
+        // Initialize on load
+        displayReviews();
+    </script>
 </body>
 </html>
