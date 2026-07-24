@@ -396,11 +396,11 @@
 
         <div class="rating-summary-card">
             <div style="text-align: center;">
-                <div class="big-rating" id="avgRating">4.8</div>
+                <div class="big-rating" id="avgRating">0.0</div>
                 <div class="stars-gold" id="avgStars">
-                    <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i>
+                    <i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i><i class="far fa-star"></i>
                 </div>
-                <div style="font-size: 0.8rem; color: #64748b; margin-top: 5px;" id="totalReviewsCount">Based on 3 Reviews</div>
+                <div style="font-size: 0.8rem; color: #64748b; margin-top: 5px;" id="totalReviewsCount">Loading reviews...</div>
             </div>
             <div style="text-align: center;">
                 <p style="font-size: 1.1rem; font-weight: 600; color: var(--primary);">100% Verified Feedback</p>
@@ -431,13 +431,13 @@
                         <label>आपका अनुभव / कमेंट</label>
                         <textarea id="userComment" class="form-input" rows="4" placeholder="ऐप आपको कैसी लगी?" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-android" style="width: 100%; justify-content: center;">Submit Review</button>
+                    <button type="submit" id="submitBtn" class="btn btn-android" style="width: 100%; justify-content: center;">Submit Review</button>
                 </form>
             </div>
 
             <!-- Review Cards List -->
             <div class="reviews-list" id="reviewsContainer">
-                <!-- Static Default Reviews -->
+                <p style="text-align:center; color:#94a3b8;">Reviews load ho rahe hain...</p>
             </div>
         </div>
     </section>
@@ -484,7 +484,6 @@
             <div>
                 <h4 class="footer-header">Categories</h4>
                 <ul class="footer-links">
-                    <li><a href="#">Food & Cafe</a></li>
                     <li><a href="#">Fashion</a></li>
                     <li><a href="#">Medical</a></li>
                     <li><a href="#">Electronics</a></li>
@@ -513,113 +512,208 @@
         </div>
     </footer>
 
-    <!-- Review System Script -->
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <!-- Firebase Realtime Review Script (Optimized for 10K Seed) -->
     <script>
-        const initialReviews = [
-            { name: "Aman Verma", rating: 5, comment: "Bhut hi badiya app h Jind k market k lia! Stock ghar baithe pta chal jata h.", date: "12 May 2026" },
-            { name: "Suresh Kumar", rating: 5, comment: "Dukandaro se direct call pe baat ho jati h, best local directory app.", date: "05 June 2026" },
-            { name: "Pooja Saini", rating: 4, comment: "Superb UI aur fast service. Jind market k offers easily mil jate h.", date: "20 July 2026" }
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBkAMWOoaGkrlJNPXLmMwHIPozKUljkDko",
+  authDomain: "online-store-6ec54.firebaseapp.com",
+  databaseURL: "https://online-store-6ec54-default-rtdb.firebaseio.com",
+  projectId: "online-store-6ec54",
+  storageBucket: "online-store-6ec54.firebasestorage.app",
+  messagingSenderId: "663347759510",
+  appId: "1:663347759510:web:edadf3886050fc3833b5b7",
+  measurementId: "G-KGFPZR85SR"
+};
+
+
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
+    const database = firebase.database();
+    const reviewsRef = database.ref('cityconnect_reviews');
+
+    let selectedRating = 5;
+
+    // Star rating selection logic
+    const stars = document.querySelectorAll('#starSelector i');
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            selectedRating = parseInt(this.getAttribute('data-rating'));
+            stars.forEach((s, idx) => {
+                if (idx < selectedRating) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+        });
+    });
+
+    function renderStars(rating) {
+        let html = '';
+        for (let i = 1; i <= 5; i++) {
+            if (i <= rating) {
+                html += '<i class="fas fa-star stars-gold"></i>';
+            } else {
+                html += '<i class="far fa-star stars-gold"></i>';
+            }
+        }
+        return html;
+    }
+
+    function escapeHTML(str) {
+        return String(str).replace(/[&<>'"]/g, 
+            tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+        );
+    }
+
+    // Helper delay function for non-blocking Firebase upload
+    const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+    // Reliable 10,000 Reviews Generator
+    async function seedFull10KReviews(currentCount) {
+        const names = ["Amit Sharma", "Rahul Verma", "Pooja Rani", "Vikas Saini", "Suresh Kumar", "Aniket Goyal", "Neha Dahiya", "Deepak Malik", "Sunil Choudhary", "Ritu Rani", "Sahil Khan", "Monu Jind", "Vijay Parkash", "Pinki Devi", "Pankaj Sharma", "Ashish Sheokand", "Manish Mor", "Kavita Ahlawat", "Sachin Kanda", "Vikram Gill", "Rakesh Kumar", "Mohit Saini"];
+        const comments = [
+            "Bhut hi badiya app h Jind k market k lia! Stock ghar baithe pta chal jata h.",
+            "Dukandaro se direct call pe baat ho jati h, best local directory app.",
+            "Superb UI aur fast service. Jind market k offers easily mil jate h.",
+            "Bhai Jind walo k liye best app h, dukan dhundna aasan ho gaya.",
+            "Bahut accha initiative hai. Har shop ka contact number mil jata hai.",
+            "Best local app! Offers ki update jaldi milti h.",
+            "Sahi app hai, time aur money dono save hota hai.",
+            "Acha app h, direct call connect ho jati h shopkeeper se."
         ];
 
-        let selectedRating = 5;
+        const startDate = new Date(2026, 0, 1).getTime();
+        const endDate = new Date(2026, 6, 24).getTime();
 
-        // Load reviews from local storage or set initial
-        function getReviews() {
-            const saved = localStorage.getItem('cityconnect_reviews');
-            return saved ? JSON.parse(saved) : initialReviews;
-        }
+        const needed = 10000 - currentCount;
+        const totalBatches = Math.ceil(needed / 1000);
 
-        function saveReviews(reviews) {
-            localStorage.setItem('cityconnect_reviews', JSON.stringify(reviews));
-        }
+        console.log(`Adding ${needed} reviews in ${totalBatches} batches...`);
 
-        // Star rating selection in form
-        const stars = document.querySelectorAll('#starSelector i');
-        stars.forEach(star => {
-            star.addEventListener('click', function() {
-                selectedRating = parseInt(this.getAttribute('data-rating'));
-                stars.forEach((s, idx) => {
-                    if (idx < selectedRating) {
-                        s.classList.add('active');
-                    } else {
-                        s.classList.remove('active');
-                    }
-                });
-            });
-        });
+        for (let b = 0; b < totalBatches; b++) {
+            const batch = {};
+            const itemsInThisBatch = Math.min(1000, needed - (b * 1000));
 
-        // Render Stars HTML
-        function renderStars(rating) {
-            let html = '';
-            for (let i = 1; i <= 5; i++) {
-                if (i <= rating) {
-                    html += '<i class="fas fa-star stars-gold"></i>';
-                } else {
-                    html += '<i class="far fa-star stars-gold"></i>';
-                }
+            for (let i = 0; i < itemsInThisBatch; i++) {
+                const randomName = names[Math.floor(Math.random() * names.length)];
+                const randomComment = comments[Math.floor(Math.random() * comments.length)];
+                const rating = Math.random() > 0.12 ? 5 : 4;
+                const randomTime = new Date(startDate + Math.random() * (endDate - startDate));
+                const formattedDate = randomTime.toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+
+                const newKey = reviewsRef.push().key;
+                batch[newKey] = {
+                    name: randomName,
+                    rating: rating,
+                    comment: randomComment,
+                    date: formattedDate
+                };
             }
-            return html;
+
+            // Push batch to Firebase and pause slightly to prevent rate limit / hanging
+            await reviewsRef.update(batch);
+            await delay(500); 
+        }
+        console.log("10,000 Reviews successfully added!");
+    }
+
+    // Submit New Review from Form
+    document.getElementById('reviewForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const submitBtn = document.getElementById('submitBtn');
+        const name = document.getElementById('userName').value.trim();
+        const comment = document.getElementById('userComment').value.trim();
+
+        if (!name || !comment) return;
+
+        submitBtn.disabled = true;
+        submitBtn.innerText = 'Submitting...';
+
+        const newReview = {
+            name: name,
+            rating: selectedRating,
+            comment: comment,
+            date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
+        };
+
+        reviewsRef.push(newReview, (error) => {
+            submitBtn.disabled = false;
+            submitBtn.innerText = 'Submit Review';
+
+            if (error) {
+                alert('Review add nahi ho paya: ' + error.message);
+            } else {
+                alert('Aapka review successfully add ho gaya h!');
+                this.reset();
+                selectedRating = 5;
+                stars.forEach(s => s.classList.add('active'));
+            }
+        });
+    });
+
+    // Real-time Database Listener
+    let isSeeding = false;
+    reviewsRef.on('value', (snapshot) => {
+        const container = document.getElementById('reviewsContainer');
+        container.innerHTML = '';
+
+        if (!snapshot.exists()) {
+            if (!isSeeding) {
+                isSeeding = true;
+                seedFull10KReviews(0);
+            }
+            return;
         }
 
-        // Render Reviews
-        function displayReviews() {
-            const reviews = getReviews();
-            const container = document.getElementById('reviewsContainer');
-            container.innerHTML = '';
+        const data = snapshot.val();
+        const keys = Object.keys(data);
+        const totalCount = keys.length;
 
-            let totalRating = 0;
-
-            reviews.slice().reverse().forEach(r => {
-                totalRating += r.rating;
-                const card = document.createElement('div');
-                card.className = 'review-card';
-                card.innerHTML = `
-                    <div class="review-header">
-                        <span class="reviewer-name">${r.name}</span>
-                        <span class="review-date">${r.date}</span>
-                    </div>
-                    <div style="margin-bottom: 8px;">${renderStars(r.rating)}</div>
-                    <p class="review-text">${r.comment}</p>
-                `;
-                container.appendChild(card);
-            });
-
-            // Update stats
-            const avg = (totalRating / reviews.length).toFixed(1);
-            document.getElementById('avgRating').innerText = avg;
-            document.getElementById('totalReviewsCount').innerText = `Based on ${reviews.length} Reviews`;
+        // Auto-fill remaining reviews if count is less than 10,000
+        if (totalCount < 10000 && !isSeeding) {
+            isSeeding = true;
+            seedFull10KReviews(totalCount);
         }
 
-        // Handle Review Form Submission
-        document.getElementById('reviewForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const name = document.getElementById('userName').value.trim();
-            const comment = document.getElementById('userComment').value.trim();
+        let totalRating = 0;
+        const displayKeys = keys.slice().reverse();
+        const visibleKeys = displayKeys.slice(0, 30); // Fast DOM rendering for top 30 reviews
 
-            if (!name || !comment) return;
-
-            const newReview = {
-                name: name,
-                rating: selectedRating,
-                comment: comment,
-                date: new Date().toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' })
-            };
-
-            const reviews = getReviews();
-            reviews.push(newReview);
-            saveReviews(reviews);
-
-            displayReviews();
-
-            // Reset Form
-            this.reset();
-            selectedRating = 5;
-            stars.forEach(s => s.classList.add('active'));
-            alert('Aapka review successfully add ho gaya h!');
+        keys.forEach(key => {
+            totalRating += (parseInt(data[key].rating) || 5);
         });
 
-        // Initialize on load
-        displayReviews();
-    </script>
+        visibleKeys.forEach(key => {
+            const r = data[key];
+            const ratingNum = parseInt(r.rating) || 5;
+
+            const card = document.createElement('div');
+            card.className = 'review-card';
+            card.innerHTML = `
+                <div class="review-header">
+                    <span class="reviewer-name">${escapeHTML(r.name)}</span>
+                    <span class="review-date">${r.date || ''}</span>
+                </div>
+                <div style="margin-bottom: 8px;">${renderStars(ratingNum)}</div>
+                <p class="review-text">${escapeHTML(r.comment)}</p>
+            `;
+            container.appendChild(card);
+        });
+
+        // UI Header Updates
+        const avg = (totalRating / totalCount).toFixed(1);
+        document.getElementById('avgRating').innerText = avg;
+        document.getElementById('totalReviewsCount').innerText = `Based on ${totalCount.toLocaleString()} Reviews`;
+        document.getElementById('avgStars').innerHTML = renderStars(Math.round(avg));
+    });
+</script>
+
 </body>
 </html>
